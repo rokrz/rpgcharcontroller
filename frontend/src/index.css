@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-parchment: 244 236 216;
+    --color-parchment-deep: 232 220 192;
+    --color-parchment-edge: 217 201 163;
+    --color-ink: 42 31 23;
+    --color-ink-muted: 107 90 72;
+    --color-ink-faded: 155 139 116;
+    --color-burgundy: 139 46 46;
+    --color-burgundy-dark: 107 32 32;
+    --color-burgundy-soft: 176 107 107;
+    --color-gold: 184 134 11;
+    --color-gold-soft: 212 169 58;
+    --color-gold-wash: 243 230 184;
+    --color-hp-healthy: 74 107 58;
+    --color-hp-wounded: 181 101 29;
+    --color-hp-critical: 122 31 31;
+    --color-cond-buff: 74 107 58;
+    --color-cond-neutral: 107 90 72;
+    --color-cond-debuff: 122 31 31;
+    --color-cond-magic: 42 74 107;
+    --color-cond-burn: 160 69 28;
+
+    --bg-grain-color: 120 90 50;
+    --bg-grain-alpha: 0.06;
+    --shadow-page: 0 1px 2px rgba(60, 40, 20, 0.08), 0 4px 12px rgba(60, 40, 20, 0.06);
+
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+  }
+
+  .dark {
+    --color-parchment: 30 24 20;
+    --color-parchment-deep: 22 17 14;
+    --color-parchment-edge: 64 50 38;
+    --color-ink: 230 220 200;
+    --color-ink-muted: 168 155 134;
+    --color-ink-faded: 122 110 95;
+    --color-burgundy: 200 90 90;
+    --color-burgundy-dark: 168 64 64;
+    --color-burgundy-soft: 232 150 150;
+    --color-gold: 220 170 60;
+    --color-gold-soft: 240 200 110;
+    --color-gold-wash: 70 55 30;
+    --color-hp-healthy: 130 180 110;
+    --color-hp-wounded: 220 150 80;
+    --color-hp-critical: 220 90 90;
+    --color-cond-buff: 130 180 110;
+    --color-cond-neutral: 168 155 134;
+    --color-cond-debuff: 220 90 90;
+    --color-cond-magic: 110 165 220;
+    --color-cond-burn: 230 130 80;
+
+    --bg-grain-color: 200 170 110;
+    --bg-grain-alpha: 0.04;
+    --shadow-page: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.5);
+  }
+
+  html, body, #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-parchment text-ink font-serif antialiased;
+    margin: 0;
+    padding-top: var(--safe-top);
+    padding-right: var(--safe-right);
+    padding-left: var(--safe-left);
+    background-image: radial-gradient(
+      rgb(var(--bg-grain-color) / var(--bg-grain-alpha)) 1px,
+      transparent 1px
+    );
+    background-size: 4px 4px;
+  }
+
+  h1, h2, h3 {
+    @apply font-display tracking-wide text-ink;
+    margin: 0;
+  }
+  h1 { @apply text-4xl md:text-5xl; }
+  h2 { @apply text-2xl; }
+  h3 { @apply text-xl; }
+  p { margin: 0; }
+
+  input, select, textarea {
+    @apply font-serif;
+  }
+  input:focus, select:focus, textarea:focus, button:focus-visible {
+    @apply outline-none ring-2 ring-burgundy/60 ring-offset-1 ring-offset-parchment;
+  }
+}
+
+@media (pointer: coarse) {
+  .rnd-handle-corner { width: 24px !important; height: 24px !important; }
+  .rnd-handle-edge-h { height: 16px !important; }
+  .rnd-handle-edge-v { width: 16px !important; }
+}
+
+.rnd-no-drag {
+  position: relative;
+  z-index: 5;
+}

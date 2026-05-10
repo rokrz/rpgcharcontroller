@@ -1,0 +1,34 @@
+# Dependências
+node_modules/
+
+# Build do frontend
+frontend/dist/
+
+# Banco de dados local (salvo em AppData)
+*.json.bak
+db.json
+
+# Dados gerados por scripts (regenerados via npm run import-*)
+backend/src/data/dnd5e_subclasses.json
+
+# Variáveis de ambiente
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Cache do Vite
+frontend/.vite/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
