@@ -39,6 +39,7 @@ export function findBackgroundSlug(input) {
 }
 
 export const DND5E_CLASSES = [
+  { label: "Artífice",    slug: "artificer" },
   { label: "Bárbaro",     slug: "barbarian" },
   { label: "Bardo",       slug: "bard" },
   { label: "Clérigo",     slug: "cleric" },

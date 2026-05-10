@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { searchDnd5e, getClassFeatures, getSubclasses, getSubclassFeatures, getRaceDetails, getBackgroundDetails, searchClassSpells } = require("../systems/dnd5eProxy");
+const { searchDnd5e, getClassFeatures, getSubclasses, getSubclassFeatures, getRaceDetails, getBackgroundDetails, searchClassSpells, getRaceList } = require("../systems/dnd5eProxy");
 const { searchPf2e, searchClassFeats } = require("../systems/pf2eSearch");
 const { searchDaggerheart, getClassCards } = require("../systems/daggerheartProxy");
 
@@ -20,6 +20,9 @@ router.get("/dnd5e", async (req, res) => {
     if (type === "subclassfeatures") {
       const results = await getSubclassFeatures(cls.toLowerCase(), Number(level));
       return res.json({ results });
+    }
+    if (type === "racelist") {
+      return res.json({ results: getRaceList() });
     }
     if (type === "racedetail") {
       const data = await getRaceDetails(index.toLowerCase());

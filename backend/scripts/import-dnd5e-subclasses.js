@@ -48,6 +48,7 @@ async function fetchAllPages(baseUrl) {
 
 // Mapa de slugs de classe da Open5e → chave usada no frontend
 const CLASS_SLUG_MAP = {
+  artificer: "artificer",
   barbarian: "barbarian",
   bard:      "bard",
   cleric:    "cleric",
@@ -118,6 +119,12 @@ async function main() {
 
 // Fallback caso a API esteja fora do ar — mesma lista do Booker, nomes em inglês
 const FALLBACK = [
+  // Artificer (TCE)
+  { slug: "alchemist",    name: "Alchemist",    archetype_class: "artificer", document: { short_name: "TCE" } },
+  { slug: "armorer",      name: "Armorer",      archetype_class: "artificer", document: { short_name: "TCE" } },
+  { slug: "artillerist",  name: "Artillerist",  archetype_class: "artificer", document: { short_name: "TCE" } },
+  { slug: "battle-smith", name: "Battle Smith", archetype_class: "artificer", document: { short_name: "TCE" } },
+  // Barbarian
   { slug: "berserker",           name: "Path of the Berserker",           archetype_class: "barbarian", document: { short_name: "PHB" } },
   { slug: "totem-warrior",       name: "Path of the Totem Warrior",       archetype_class: "barbarian", document: { short_name: "PHB" } },
   { slug: "ancestral-guardian",  name: "Path of the Ancestral Guardian",  archetype_class: "barbarian", document: { short_name: "XGE" } },

@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "main": "src/app.js",
   "scripts": {
-    "predev": "node scripts/ensure-dnd5e-subclasses.js",
+    "predev": "node scripts/ensure-dnd5e-subclasses.js && node scripts/ensure-dnd5e-races.js",
     "dev": "node src/app.js",
     "start": "node src/app.js",
     "ensure-dnd5e-subclasses": "node scripts/ensure-dnd5e-subclasses.js",
-    "import-dnd5e-subclasses": "node scripts/import-dnd5e-subclasses.js"
+    "import-dnd5e-subclasses": "node scripts/import-dnd5e-subclasses.js",
+    "ensure-dnd5e-races": "node scripts/ensure-dnd5e-races.js",
+    "import-dnd5e-races": "node scripts/import-dnd5e-races.js"
   },
   "keywords": [],
   "author": "",

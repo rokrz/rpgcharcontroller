@@ -1,6 +1,8 @@
 const path = require("path");
+const fs = require("fs");
 const DND5E_BASE = "https://www.dnd5eapi.co/api/2014";
 const LOCAL_SUBCLASSES = require(path.join(__dirname, "../data/dnd5e_subclasses.json"));
+const RACES_PATH = path.join(__dirname, "../data/dnd5e_races.json");
 
 const TYPE_MAP = {
   spells:    "spells",
@@ -278,10 +280,16 @@ async function searchClassSpells(classSlug, query, maxSpellLevel) {
   return spells;
 }
 
+function getRaceList() {
+  if (!fs.existsSync(RACES_PATH)) return [];
+  return JSON.parse(fs.readFileSync(RACES_PATH, "utf8"));
+}
+
 module.exports = {
   searchDnd5e,
   getClassFeatures,
   getSubclasses,
+  getRaceList,
   getSubclassFeatures,
   getRaceDetails,
   getBackgroundDetails,

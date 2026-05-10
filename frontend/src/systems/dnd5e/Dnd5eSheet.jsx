@@ -10,7 +10,7 @@ import ClassSuggestions from "../../components/ClassSuggestions.jsx";
 import TraitInfoPanel from "../../components/TraitInfoPanel.jsx";
 import { dnd5eApi } from "./api.js";
 import { DND5E_ABILITIES, DND5E_SKILLS } from "./schema.js";
-import { DND5E_CLASSES, findClassSlug, DND5E_RACES, findRaceSlug, DND5E_BACKGROUNDS, findBackgroundSlug } from "./classes.js";
+import { DND5E_CLASSES, findClassSlug, DND5E_RACES, DND5E_BACKGROUNDS, findBackgroundSlug } from "./classes.js";
 import { api } from "../../services/api.js";
 
 function ComboField({ label, value, onChange, options }) {
@@ -62,15 +62,26 @@ export default function Dnd5eSheet({ data, onUpdate }) {
   const [tab, setTab] = useState(0);
   const [browser, setBrowser] = useState(null);
   const [subclasses, setSubclasses] = useState([]);
+  const [races, setRaces] = useState(DND5E_RACES);
   const [raceDetails, setRaceDetails] = useState(null);
   const [bgDetails, setBgDetails] = useState(null);
 
   const classSlug = findClassSlug(data.class);
-  const raceSlug = findRaceSlug(data.race);
   const bgSlug = findBackgroundSlug(data.background);
+  const raceLow = (data.race || "").toLowerCase().trim();
+  const raceSlug = races.find((r) => r.label.toLowerCase() === raceLow || r.slug === raceLow)?.slug ?? null;
   const subclassSlug = subclasses.find(
     (s) => s.label.toLowerCase() === (data.subclass || "").toLowerCase()
   )?.slug;
+
+  useEffect(() => {
+    api.fetchDetail("dnd5e", "racelist", "")
+      .then((r) => {
+        const list = (r.results || []).map((rc) => ({ label: rc.name, slug: rc.index, source: rc.source }));
+        if (list.length > 0) setRaces(list);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!classSlug) { setSubclasses([]); return; }
@@ -184,7 +195,7 @@ export default function Dnd5eSheet({ data, onUpdate }) {
           }
           <Input label="Nível" type="number" value={data.level || 1} onChange={(e) => set("level", Number(e.target.value))} />
           <Input label="XP" type="number" value={data.xp || 0} onChange={(e) => set("xp", Number(e.target.value))} />
-          <ComboField label="Raça / Espécie" value={data.race || ""} onChange={(v) => set("race", v)} options={DND5E_RACES} />
+          <ComboField label="Raça / Espécie" value={data.race || ""} onChange={(v) => set("race", v)} options={races} />
           <ComboField label="Antecedente" value={data.background || ""} onChange={(v) => set("background", v)} options={DND5E_BACKGROUNDS} />
           {raceDetails && (
             <div className="sm:col-span-2">
