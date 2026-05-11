@@ -20,7 +20,7 @@ export function createDaggerheartSheet(name = "Personagem") {
     name,
     class: "",
     subclass: "",
-    ancestry: "",
+    ancestry: { primary: "", secondary: "" },
     community: "",
     level: 1,
     pronouns: "",

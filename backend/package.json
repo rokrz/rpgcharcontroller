@@ -9,7 +9,9 @@
     "ensure-dnd5e-subclasses": "node scripts/ensure-dnd5e-subclasses.js",
     "import-dnd5e-subclasses": "node scripts/import-dnd5e-subclasses.js",
     "ensure-dnd5e-races": "node scripts/ensure-dnd5e-races.js",
-    "import-dnd5e-races": "node scripts/import-dnd5e-races.js"
+    "import-dnd5e-races": "node scripts/import-dnd5e-races.js",
+    "ensure-dnd5e-classfeatures": "node scripts/ensure-dnd5e-classfeatures.js",
+    "import-dnd5e-classfeatures": "node scripts/import-dnd5e-classfeatures.js"
   },
   "keywords": [],
   "author": "",

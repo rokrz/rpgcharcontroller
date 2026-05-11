@@ -11,7 +11,7 @@ function alreadyIn(field, value) {
   return (field || "").toLowerCase().includes(value.toLowerCase());
 }
 
-export default function TraitInfoPanel({ details, type, data, onApplySkill, onAppendLanguage, onAppendProficiency }) {
+export default function TraitInfoPanel({ details, type, data, onApplySkill, onAppendLanguage, onAppendProficiency, onAddTrait }) {
   const [open, setOpen] = useState(true);
   const [featureOpen, setFeatureOpen] = useState(false);
 
@@ -156,7 +156,29 @@ export default function TraitInfoPanel({ details, type, data, onApplySkill, onAp
           {details.traits?.length > 0 && (
             <div>
               <p className="font-display text-[9px] uppercase tracking-widest text-ink-faded mb-1">Traços</p>
-              <p className="text-xs text-ink-muted font-serif">{details.traits.join(", ")}</p>
+              <div className="flex flex-wrap gap-1.5">
+                {details.traits.map((trait) => {
+                  const already = (data?.features || []).some((f) => f.name === trait);
+                  return (
+                    <button
+                      key={trait}
+                      onClick={() => !already && onAddTrait && onAddTrait(trait)}
+                      disabled={already || !onAddTrait}
+                      title={already ? "Já adicionado" : "Adicionar à ficha"}
+                      className={`flex items-center gap-1 text-xs font-serif px-2 py-0.5 rounded-sheet border transition ${
+                        already
+                          ? "border-hp-healthy/40 text-hp-healthy cursor-default"
+                          : onAddTrait
+                          ? "border-parchment-edge text-ink hover:border-burgundy hover:text-burgundy"
+                          : "border-parchment-edge text-ink-muted cursor-default"
+                      }`}
+                    >
+                      {already ? <Check size={10} /> : <Plus size={10} />}
+                      {trait}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
 

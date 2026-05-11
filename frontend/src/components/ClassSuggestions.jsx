@@ -19,18 +19,20 @@ export default function ClassSuggestions({ className, level, fetchFn, addedNames
   const [open, setOpen] = useState(true);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(false);
   const { openWindow } = useRulesWindow();
 
   useEffect(() => {
-    if (!className) { setItems([]); return; }
+    if (!className) { setItems([]); setFetchError(false); return; }
     setLoading(true);
+    setFetchError(false);
     fetchFn(className, level)
       .then((r) => setItems(r.results || r || []))
-      .catch(() => setItems([]))
+      .catch(() => { setItems([]); setFetchError(true); })
       .finally(() => setLoading(false));
   }, [className, level]);
 
-  if (!className || (!loading && items.length === 0)) return null;
+  if (!className) return null;
 
   const addedSet = new Set(addedNames || []);
 
@@ -59,6 +61,16 @@ export default function ClassSuggestions({ className, level, fetchFn, addedNames
           {loading && (
             <p className="text-ink-muted italic text-sm py-4 text-center font-serif">
               Carregando...
+            </p>
+          )}
+          {!loading && fetchError && items.length === 0 && (
+            <p className="text-ink-muted italic text-sm py-4 text-center font-serif">
+              Não foi possível carregar as habilidades.
+            </p>
+          )}
+          {!loading && !fetchError && items.length === 0 && (
+            <p className="text-ink-muted italic text-sm py-4 text-center font-serif">
+              Nenhuma habilidade encontrada para este nível.
             </p>
           )}
           {!loading && items.map((item, i) => {

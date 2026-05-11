@@ -11,6 +11,7 @@ db.json
 # Dados gerados por scripts (regenerados via npm run import-*)
 backend/src/data/dnd5e_subclasses.json
 backend/src/data/dnd5e_races.json
+backend/src/data/dnd5e_classfeatures_srd.json
 
 # Variáveis de ambiente
 .env

@@ -118,6 +118,14 @@ export default function DaggerheartSheet({ data, onUpdate }) {
     onUpdate({ ...data, [key]: value });
   }
 
+  const ancestry = typeof data.ancestry === "object" && data.ancestry !== null
+    ? data.ancestry
+    : { primary: data.ancestry || "", secondary: "" };
+
+  function setAncestry(key, value) {
+    onUpdate({ ...data, ancestry: { ...ancestry, [key]: value } });
+  }
+
   function addCard(item) {
     const entry = {
       id: crypto.randomUUID(),
@@ -171,7 +179,8 @@ export default function DaggerheartSheet({ data, onUpdate }) {
             <Input label="Pronomes" value={data.pronouns || ""} onChange={(e) => set("pronouns", e.target.value)} />
             <ComboClass classes={DH_CLASSES} value={data.class || ""} onChange={(v) => set("class", v)} />
             <Input label="Subclasse" value={data.subclass || ""} onChange={(e) => set("subclass", e.target.value)} />
-            <ComboField label="Ancestralidade" value={data.ancestry || ""} onChange={(v) => set("ancestry", v)} options={DH_ANCESTRIES} />
+            <ComboField label="Ancestralidade Primária" value={ancestry.primary} onChange={(v) => setAncestry("primary", v)} options={DH_ANCESTRIES} />
+            <ComboField label="Ancestralidade Secundária" value={ancestry.secondary} onChange={(v) => setAncestry("secondary", v)} options={DH_ANCESTRIES} />
             <ComboField label="Comunidade" value={data.community || ""} onChange={(v) => set("community", v)} options={DH_COMMUNITIES} />
             <Input label="Nível" type="number" value={data.level || 1} onChange={(e) => set("level", Number(e.target.value))} />
             <Input label="Proficiência" type="number" value={data.proficiency || 1} onChange={(e) => set("proficiency", Number(e.target.value))} />

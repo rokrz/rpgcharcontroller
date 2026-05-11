@@ -65,6 +65,7 @@ export default function Dnd5eSheet({ data, onUpdate }) {
   const [races, setRaces] = useState(DND5E_RACES);
   const [raceDetails, setRaceDetails] = useState(null);
   const [bgDetails, setBgDetails] = useState(null);
+  const [mcSubclasses, setMcSubclasses] = useState({});
 
   const classSlug = findClassSlug(data.class);
   const bgSlug = findBackgroundSlug(data.background);
@@ -99,6 +100,38 @@ export default function Dnd5eSheet({ data, onUpdate }) {
     if (!bgSlug) { setBgDetails(null); return; }
     api.fetchDetail("dnd5e", "backgrounddetail", bgSlug).then(setBgDetails).catch(() => setBgDetails(null));
   }, [bgSlug]);
+
+  useEffect(() => {
+    for (const mc of data.multiclasses || []) {
+      const slug = findClassSlug(mc.class);
+      if (!slug || mcSubclasses[slug]) continue;
+      api.fetchDetail("dnd5e", "subclasses", slug)
+        .then((r) => setMcSubclasses((prev) => ({
+          ...prev,
+          [slug]: (r.results || []).map((s) => ({ label: s.name, slug: s.index, source: s.source })),
+        })))
+        .catch(() => {});
+    }
+  }, [data.multiclasses]);
+
+  function addMc() {
+    const next = structuredClone(data);
+    next.multiclasses = [...(next.multiclasses || []), { class: "", subclass: "" }];
+    onUpdate(next);
+  }
+
+  function removeMc(i) {
+    const next = structuredClone(data);
+    next.multiclasses = next.multiclasses.filter((_, idx) => idx !== i);
+    onUpdate(next);
+  }
+
+  function setMc(i, field, value) {
+    const next = structuredClone(data);
+    next.multiclasses[i] = { ...next.multiclasses[i], [field]: value };
+    if (field === "class") next.multiclasses[i].subclass = "";
+    onUpdate(next);
+  }
 
   function set(path, value) {
     const next = structuredClone(data);
@@ -193,6 +226,65 @@ export default function Dnd5eSheet({ data, onUpdate }) {
             ? <ComboField label="Subclasse" value={data.subclass || ""} onChange={(v) => set("subclass", v)} options={subclasses} />
             : <Input label="Subclasse" value={data.subclass || ""} onChange={(e) => set("subclass", e.target.value)} />
           }
+
+          {/* Multiclasses */}
+          {(data.multiclasses || []).map((mc, i) => {
+            const mcSlug = findClassSlug(mc.class);
+            const mcSubList = mcSlug ? (mcSubclasses[mcSlug] || []) : [];
+            return (
+              <div key={i} className="sm:col-span-2 grid grid-cols-2 gap-2 items-end">
+                <ComboField label={`Multiclasse ${i + 1}`} value={mc.class || ""} onChange={(v) => setMc(i, "class", v)} options={DND5E_CLASSES} />
+                {mcSubList.length > 0
+                  ? <ComboField label="Subclasse" value={mc.subclass || ""} onChange={(v) => setMc(i, "subclass", v)} options={mcSubList} />
+                  : <Input label="Subclasse" value={mc.subclass || ""} onChange={(e) => setMc(i, "subclass", e.target.value)} />
+                }
+                <button
+                  onClick={() => removeMc(i)}
+                  className="col-span-2 flex justify-end text-ink-faded hover:text-burgundy transition"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            );
+          })}
+
+          {(data.multiclasses || []).length < 3 && (
+            <div className="sm:col-span-2">
+              <button
+                onClick={addMc}
+                className="flex items-center gap-1.5 text-xs font-display uppercase tracking-widest text-ink-muted hover:text-ink transition"
+              >
+                <Plus size={13} /> Adicionar Multiclasse
+              </button>
+            </div>
+          )}
+
+          {/* Habilidades da Classe */}
+          {classSlug && (
+            <div className="sm:col-span-2">
+              <ClassSuggestions
+                className={data.class}
+                level={data.level || 1}
+                fetchFn={(cls, lvl) => api.searchByClass("dnd5e", "classfeatures", findClassSlug(cls) || cls, lvl)}
+                addedNames={(data.features || []).map((f) => f.name)}
+                onAdd={addFeature}
+              />
+            </div>
+          )}
+
+          {/* Habilidades da Subclasse */}
+          {subclassSlug && (
+            <div className="sm:col-span-2">
+              <ClassSuggestions
+                className={data.subclass}
+                level={data.level || 1}
+                fetchFn={(_, lvl) => api.searchByClass("dnd5e", "subclassfeatures", subclassSlug, lvl)}
+                addedNames={(data.features || []).map((f) => f.name)}
+                onAdd={addFeature}
+              />
+            </div>
+          )}
+
           <Input label="Nível" type="number" value={data.level || 1} onChange={(e) => set("level", Number(e.target.value))} />
           <Input label="XP" type="number" value={data.xp || 0} onChange={(e) => set("xp", Number(e.target.value))} />
           <ComboField label="Raça / Espécie" value={data.race || ""} onChange={(v) => set("race", v)} options={races} />
@@ -206,6 +298,7 @@ export default function Dnd5eSheet({ data, onUpdate }) {
                 onApplySkill={(key) => { const n = structuredClone(data); n.skills[key] = true; onUpdate(n); }}
                 onAppendLanguage={(lang) => { const n = structuredClone(data); n.languages = n.languages ? `${n.languages}, ${lang}` : lang; onUpdate(n); }}
                 onAppendProficiency={(prof) => { const n = structuredClone(data); n.otherProficiencies = n.otherProficiencies ? `${n.otherProficiencies}, ${prof}` : prof; onUpdate(n); }}
+                onAddTrait={(name) => addFeature({ name, source: raceDetails?.name || "" })}
               />
             </div>
           )}
@@ -218,6 +311,7 @@ export default function Dnd5eSheet({ data, onUpdate }) {
                 onApplySkill={(key) => { const n = structuredClone(data); n.skills[key] = true; onUpdate(n); }}
                 onAppendLanguage={(lang) => { const n = structuredClone(data); n.languages = n.languages ? `${n.languages}, ${lang}` : lang; onUpdate(n); }}
                 onAppendProficiency={(prof) => { const n = structuredClone(data); n.otherProficiencies = n.otherProficiencies ? `${n.otherProficiencies}, ${prof}` : prof; onUpdate(n); }}
+                onAddTrait={(name) => addFeature({ name, source: bgDetails?.name || "" })}
               />
             </div>
           )}

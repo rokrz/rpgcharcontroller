@@ -4,6 +4,74 @@ const DND5E_BASE = "https://www.dnd5eapi.co/api/2014";
 const LOCAL_SUBCLASSES = require(path.join(__dirname, "../data/dnd5e_subclasses.json"));
 const RACES_PATH = path.join(__dirname, "../data/dnd5e_races.json");
 
+const SUPPLEMENT_PATH = path.join(__dirname, "../data/dnd5e_supplement.json");
+const SUPPLEMENT = fs.existsSync(SUPPLEMENT_PATH)
+  ? JSON.parse(fs.readFileSync(SUPPLEMENT_PATH, "utf8"))
+  : { class: {}, subclass: {} };
+
+const RACE_SUPPLEMENT_PATH = path.join(__dirname, "../data/dnd5e_race_supplement.json");
+const RACE_SUPPLEMENT = fs.existsSync(RACE_SUPPLEMENT_PATH)
+  ? JSON.parse(fs.readFileSync(RACE_SUPPLEMENT_PATH, "utf8"))
+  : {};
+
+const SRD_FEATURES_PATH = path.join(__dirname, "../data/dnd5e_classfeatures_srd.json");
+let SRD_FEATURES = null;
+function getSrdFeatures() {
+  if (!SRD_FEATURES && fs.existsSync(SRD_FEATURES_PATH)) {
+    SRD_FEATURES = JSON.parse(fs.readFileSync(SRD_FEATURES_PATH, "utf8"));
+  }
+  return SRD_FEATURES || {};
+}
+
+function supplementToFeature(f) {
+  return {
+    index: f.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+    name: f.name,
+    type: "features",
+    level: f.level,
+    description: f.description || "",
+  };
+}
+
+function getSupplementClassFeatures(slug, maxLevel) {
+  const entries = (SUPPLEMENT.class || {})[slug] || [];
+  return entries
+    .filter((f) => f.level <= maxLevel)
+    .map(supplementToFeature);
+}
+
+function getSupplementSubclassFeatures(slug, maxLevel) {
+  const entries = (SUPPLEMENT.subclass || {})[slug] || [];
+  return entries
+    .filter((f) => f.level <= maxLevel)
+    .map(supplementToFeature);
+}
+
+function getSrdClassFeaturesByClass(className, maxLevel) {
+  const srd = getSrdFeatures();
+  return Object.values(srd)
+    .filter(
+      (f) =>
+        f.class &&
+        f.class.toLowerCase() === className.toLowerCase() &&
+        !f.subclass &&
+        f.level <= maxLevel
+    )
+    .map((f) => ({ ...f, type: "features" }));
+}
+
+function getSrdSubclassFeaturesByName(subclassName, maxLevel) {
+  const srd = getSrdFeatures();
+  return Object.values(srd)
+    .filter(
+      (f) =>
+        f.subclass &&
+        f.subclass.toLowerCase() === subclassName.toLowerCase() &&
+        f.level <= maxLevel
+    )
+    .map((f) => ({ ...f, type: "features" }));
+}
+
 const TYPE_MAP = {
   spells:    "spells",
   equipment: "equipment",
@@ -104,6 +172,27 @@ async function getClassFeatures(slug, maxLevel = 20) {
   const cacheKey = `${slug}-${maxLevel}`;
   if (classFeatureCache[cacheKey]) return classFeatureCache[cacheKey];
 
+  // 1. Supplement (non-SRD committed data)
+  const supplementFeatures = getSupplementClassFeatures(slug, maxLevel);
+
+  // 2. SRD local cache — look up by matching class name (slug → title-case)
+  const className = slug.charAt(0).toUpperCase() + slug.slice(1);
+  const srdFeatures = getSrdClassFeaturesByClass(className, maxLevel);
+
+  // Merge: supplement entries take priority (they may overlap with SRD)
+  const supplementNames = new Set(supplementFeatures.map((f) => f.name.toLowerCase()));
+  const merged = [
+    ...supplementFeatures,
+    ...srdFeatures.filter((f) => !supplementNames.has(f.name.toLowerCase())),
+  ];
+
+  if (merged.length > 0) {
+    merged.sort((a, b) => (a.level || 0) - (b.level || 0));
+    classFeatureCache[cacheKey] = merged;
+    return merged;
+  }
+
+  // 3. API fallback
   const levelResults = await Promise.all(
     Array.from({ length: maxLevel }, (_, i) =>
       fetch(`${DND5E_BASE}/classes/${slug}/levels/${i + 1}/features`)
@@ -139,6 +228,45 @@ async function getSubclassFeatures(subclassSlug, maxLevel = 20) {
   const cacheKey = `${subclassSlug}-${maxLevel}`;
   if (subclassFeatureCache[cacheKey]) return subclassFeatureCache[cacheKey];
 
+  // 1. Supplement (non-SRD committed data) — keyed by slug
+  const supplementFeatures = getSupplementSubclassFeatures(subclassSlug, maxLevel);
+  if (supplementFeatures.length > 0) {
+    const sorted = supplementFeatures.sort((a, b) => (a.level || 0) - (b.level || 0));
+    subclassFeatureCache[cacheKey] = sorted;
+    return sorted;
+  }
+
+  // 2. SRD local cache — look for matching subclass name
+  // Derive a display name from the slug for matching
+  const LOCAL_SUBCLASS_NAMES = {
+    "lore": "College of Lore", "valor": "College of Valor",
+    "berserker": "Berserker", "totem-warrior": "Totem Warrior",
+    "life": "Life", "light": "Light", "nature": "Nature",
+    "knowledge": "Knowledge", "trickery": "Trickery", "war": "War",
+    "tempest": "Tempest", "death": "Death",
+    "land": "Land", "moon": "Moon",
+    "champion": "Champion", "battle-master": "Battle Master", "eldritch-knight": "Eldritch Knight",
+    "open-hand": "Open Hand", "shadow": "Shadow", "four-elements": "Four Elements",
+    "devotion": "Devotion", "ancients": "Ancients", "vengeance": "Vengeance", "oathbreaker": "Oathbreaker",
+    "beast-master": "Beast Master", "hunter": "Hunter",
+    "arcane-trickster": "Arcane Trickster", "assassin": "Assassin", "thief": "Thief",
+    "draconic": "Draconic Bloodline", "wild-magic": "Wild Magic",
+    "archfey": "Archfey", "fiend": "Fiend", "great-old-one": "Great Old One",
+    "abjuration": "Abjuration", "conjuration": "Conjuration", "divination": "Divination",
+    "enchantment": "Enchantment", "evocation": "Evocation", "illusion": "Illusion",
+    "necromancy": "Necromancy", "transmutation": "Transmutation",
+  };
+  const subclassName = LOCAL_SUBCLASS_NAMES[subclassSlug];
+  if (subclassName) {
+    const srdFeatures = getSrdSubclassFeaturesByName(subclassName, maxLevel);
+    if (srdFeatures.length > 0) {
+      const sorted = srdFeatures.sort((a, b) => (a.level || 0) - (b.level || 0));
+      subclassFeatureCache[cacheKey] = sorted;
+      return sorted;
+    }
+  }
+
+  // 3. API fallback
   const res = await fetch(`${DND5E_BASE}/subclasses/${subclassSlug}/features`);
   if (!res.ok) return [];
   const json = await res.json();
@@ -214,6 +342,12 @@ function normalizeTraitDetails(raw, isSubrace) {
 
 async function getRaceDetails(raceIndex) {
   if (raceCache[raceIndex]) return raceCache[raceIndex];
+
+  if (RACE_SUPPLEMENT[raceIndex]) {
+    raceCache[raceIndex] = RACE_SUPPLEMENT[raceIndex];
+    return RACE_SUPPLEMENT[raceIndex];
+  }
+
   const isSubrace = !MAIN_RACES.has(raceIndex);
   const endpoint = isSubrace
     ? `${DND5E_BASE}/subraces/${raceIndex}`

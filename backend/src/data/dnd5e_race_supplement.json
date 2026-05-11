@@ -1,0 +1,553 @@
+{
+  "aasimar": {
+    "index": "aasimar",
+    "name": "Aasimar",
+    "speed": 30,
+    "darkvision": 60,
+    "size": "Medium",
+    "abilityBonuses": [{ "abilityName": "Charisma", "bonus": 2 }],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Common", "Celestial"],
+    "languageDesc": "You can speak, read, and write Common and Celestial.",
+    "traits": ["Celestial Resistance", "Healing Hands", "Light Bearer", "Radiant Soul / Necrotic Shroud / Radiant Consumption"]
+  },
+  "firbolg": {
+    "index": "firbolg",
+    "name": "Firbolg",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Wisdom", "bonus": 2 },
+      { "abilityName": "Strength", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Common", "Elvish", "Giant"],
+    "languageDesc": "You can speak, read, and write Common, Elvish, and Giant.",
+    "traits": ["Firbolg Magic", "Hidden Step", "Powerful Build", "Speech of Beast and Leaf"]
+  },
+  "goliath": {
+    "index": "goliath",
+    "name": "Goliath",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Strength", "bonus": 2 },
+      { "abilityName": "Constitution", "bonus": 1 }
+    ],
+    "skillProficiencies": [{ "key": "athletics", "name": "Athletics" }],
+    "otherProficiencies": [],
+    "languages": ["Common", "Giant"],
+    "languageDesc": "You can speak, read, and write Common and Giant.",
+    "traits": ["Natural Athlete", "Stone's Endurance", "Powerful Build", "Mountain Born"]
+  },
+  "kenku": {
+    "index": "kenku",
+    "name": "Kenku",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Dexterity", "bonus": 2 },
+      { "abilityName": "Wisdom", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Common", "Auran (understood only; speaks by mimicry)"],
+    "languageDesc": "You can read and write Common and Auran, but you speak only by mimicking sounds you have heard.",
+    "traits": ["Expert Forgery", "Kenku Training", "Mimicry"]
+  },
+  "lizardfolk": {
+    "index": "lizardfolk",
+    "name": "Lizardfolk",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Constitution", "bonus": 2 },
+      { "abilityName": "Wisdom", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Common", "Draconic"],
+    "languageDesc": "You can speak, read, and write Common and Draconic.",
+    "traits": ["Bite", "Cunning Artisan", "Hold Breath", "Hunter's Lore", "Natural Armor", "Hungry Jaws"]
+  },
+  "tabaxi": {
+    "index": "tabaxi",
+    "name": "Tabaxi",
+    "speed": 30,
+    "darkvision": 60,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Charisma", "bonus": 2 },
+      { "abilityName": "Dexterity", "bonus": 1 }
+    ],
+    "skillProficiencies": [
+      { "key": "perception", "name": "Perception" },
+      { "key": "stealth", "name": "Stealth" }
+    ],
+    "otherProficiencies": [],
+    "languages": ["Common", "One other language of your choice"],
+    "languageDesc": "You can speak, read, and write Common and one other language of your choice.",
+    "traits": ["Cat's Claws", "Cat's Talent", "Feline Agility"]
+  },
+  "triton": {
+    "index": "triton",
+    "name": "Triton",
+    "speed": 30,
+    "darkvision": 60,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Strength", "bonus": 1 },
+      { "abilityName": "Constitution", "bonus": 1 },
+      { "abilityName": "Charisma", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Common", "Primordial"],
+    "languageDesc": "You can speak, read, and write Common and Primordial.",
+    "traits": ["Amphibious", "Control Air and Water", "Emissary of the Sea", "Guardians of the Depths"]
+  },
+  "yuan-ti-pureblood": {
+    "index": "yuan-ti-pureblood",
+    "name": "Yuan-ti Pureblood",
+    "speed": 30,
+    "darkvision": 60,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Charisma", "bonus": 2 },
+      { "abilityName": "Intelligence", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Common", "Abyssal", "Draconic"],
+    "languageDesc": "You can speak, read, and write Common, Abyssal, and Draconic.",
+    "traits": ["Innate Spellcasting", "Magic Resistance", "Poison Immunity"]
+  },
+  "githyanki": {
+    "index": "githyanki",
+    "name": "Githyanki",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Strength", "bonus": 2 },
+      { "abilityName": "Intelligence", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": ["Light Armor", "Medium Armor", "Shortswords", "Longswords", "Greatswords"],
+    "languages": ["Common", "Gith"],
+    "languageDesc": "You can speak, read, and write Common and Gith.",
+    "traits": ["Decadent Mastery", "Martial Prodigy", "Githyanki Psionics"]
+  },
+  "githzerai": {
+    "index": "githzerai",
+    "name": "Githzerai",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Wisdom", "bonus": 2 },
+      { "abilityName": "Intelligence", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Common", "Gith"],
+    "languageDesc": "You can speak, read, and write Common and Gith.",
+    "traits": ["Mental Discipline", "Githzerai Psionics"]
+  },
+  "eladrin": {
+    "index": "eladrin",
+    "name": "Eladrin",
+    "speed": 30,
+    "darkvision": 60,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Charisma", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": [],
+    "languageDesc": "Subrace of Elf. Inherits all base Elf traits.",
+    "traits": ["Fey Step (with seasonal effect: Autumn/Winter/Spring/Summer)"]
+  },
+  "sea-elf": {
+    "index": "sea-elf",
+    "name": "Sea Elf",
+    "speed": 30,
+    "darkvision": 60,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Constitution", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Aquan"],
+    "languageDesc": "Subrace of Elf. You also learn Aquan.",
+    "traits": ["Child of the Sea", "Friend of the Sea"]
+  },
+  "shadar-kai": {
+    "index": "shadar-kai",
+    "name": "Shadar-kai",
+    "speed": 30,
+    "darkvision": 60,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Constitution", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": [],
+    "languageDesc": "Subrace of Elf. Inherits all base Elf traits.",
+    "traits": ["Blessing of the Raven Queen", "Necrotic Resistance"]
+  },
+  "custom-lineage": {
+    "index": "custom-lineage",
+    "name": "Custom Lineage",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Small or Medium",
+    "abilityBonuses": [
+      { "abilityName": "One ability of your choice", "bonus": 2 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Common", "One language of your choice"],
+    "languageDesc": "You can speak, read, and write Common and one language of your choice.",
+    "traits": ["Variable Trait (Darkvision OR Feat)", "Language", "One Skill Proficiency of Your Choice"]
+  },
+  "changeling": {
+    "index": "changeling",
+    "name": "Changeling",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Charisma", "bonus": 2 },
+      { "abilityName": "Intelligence or Wisdom (choose one)", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Common", "Two other languages of your choice"],
+    "languageDesc": "You can speak, read, and write Common and two other languages of your choice.",
+    "traits": ["Shapechanger", "Changeling Instincts"]
+  },
+  "kalashtar": {
+    "index": "kalashtar",
+    "name": "Kalashtar",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Wisdom", "bonus": 2 },
+      { "abilityName": "Charisma", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Common", "Quori", "One other language of your choice"],
+    "languageDesc": "You can speak, read, and write Common and Quori, plus one other language of your choice.",
+    "traits": ["Dual Mind", "Mental Discipline", "Mind Link", "Severed from Dreams"]
+  },
+  "shifter": {
+    "index": "shifter",
+    "name": "Shifter",
+    "speed": 30,
+    "darkvision": 60,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Dexterity", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Common"],
+    "languageDesc": "You can speak, read, and write Common.",
+    "traits": ["Shifting", "Subtype Feature (Beasthide / Longtooth / Swiftstride / Wildhunt)"]
+  },
+  "warforged": {
+    "index": "warforged",
+    "name": "Warforged",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Constitution", "bonus": 2 },
+      { "abilityName": "One other ability of your choice", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": ["One tool of your choice"],
+    "languages": ["Common", "One language of your choice"],
+    "languageDesc": "You can speak, read, and write Common and one language of your choice.",
+    "traits": ["Constructed Resilience", "Sentry's Rest", "Integrated Protection", "Specialized Design"]
+  },
+  "fairy": {
+    "index": "fairy",
+    "name": "Fairy",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Small",
+    "abilityBonuses": [
+      { "abilityName": "One ability of your choice", "bonus": 2 },
+      { "abilityName": "Another ability of your choice", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Common", "Sylvan", "One language of your choice"],
+    "languageDesc": "You can speak, read, and write Common, Sylvan, and one other language of your choice.",
+    "traits": ["Fairy Magic", "Flight", "Fey (creature type)"]
+  },
+  "harengon": {
+    "index": "harengon",
+    "name": "Harengon",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Small or Medium",
+    "abilityBonuses": [
+      { "abilityName": "One ability of your choice", "bonus": 2 },
+      { "abilityName": "Another ability of your choice", "bonus": 1 }
+    ],
+    "skillProficiencies": [{ "key": "perception", "name": "Perception" }],
+    "otherProficiencies": [],
+    "languages": ["Common", "One language of your choice"],
+    "languageDesc": "You can speak, read, and write Common and one other language of your choice.",
+    "traits": ["Hare-Trigger", "Leporine Senses", "Lucky Footwork", "Rabbit Hop"]
+  },
+  "mountain-dwarf": {
+    "index": "mountain-dwarf",
+    "name": "Mountain Dwarf",
+    "speed": 25,
+    "darkvision": 60,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Strength", "bonus": 2 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": ["Light Armor", "Medium Armor"],
+    "languages": [],
+    "languageDesc": "Subrace of Dwarf. Inherits all base Dwarf traits.",
+    "traits": ["Dwarven Armor Training"]
+  },
+  "wood-elf": {
+    "index": "wood-elf",
+    "name": "Wood Elf",
+    "speed": 35,
+    "darkvision": 60,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Wisdom", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": ["Longswords", "Shortswords", "Longbows", "Shortbows"],
+    "languages": [],
+    "languageDesc": "Subrace of Elf. Inherits all base Elf traits.",
+    "traits": ["Elf Weapon Training", "Fleet of Foot", "Mask of the Wild"]
+  },
+  "dark-elf": {
+    "index": "dark-elf",
+    "name": "Drow",
+    "speed": 30,
+    "darkvision": 120,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Charisma", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": ["Rapiers", "Shortswords", "Hand Crossbows"],
+    "languages": [],
+    "languageDesc": "Subrace of Elf. Inherits all base Elf traits.",
+    "traits": ["Superior Darkvision", "Sunlight Sensitivity", "Drow Magic", "Drow Weapon Training"]
+  },
+  "forest-gnome": {
+    "index": "forest-gnome",
+    "name": "Forest Gnome",
+    "speed": 25,
+    "darkvision": 60,
+    "size": "Small",
+    "abilityBonuses": [
+      { "abilityName": "Dexterity", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": [],
+    "languageDesc": "Subrace of Gnome. Inherits all base Gnome traits.",
+    "traits": ["Natural Illusionist", "Speak with Small Beasts"]
+  },
+  "stout-halfling": {
+    "index": "stout-halfling",
+    "name": "Stout Halfling",
+    "speed": 25,
+    "darkvision": 0,
+    "size": "Small",
+    "abilityBonuses": [
+      { "abilityName": "Constitution", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": [],
+    "languageDesc": "Subrace of Halfling. Inherits all base Halfling traits.",
+    "traits": ["Stout Resilience"]
+  },
+  "black-dragonborn": {
+    "index": "black-dragonborn",
+    "name": "Draconato Negro",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Strength", "bonus": 2 },
+      { "abilityName": "Charisma", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Common", "Draconic"],
+    "languageDesc": "You can speak, read, and write Common and Draconic.",
+    "traits": ["Breath Weapon (5×30 ft line, Acid, DEX save)", "Damage Resistance (Acid)"]
+  },
+  "blue-dragonborn": {
+    "index": "blue-dragonborn",
+    "name": "Draconato Azul",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Strength", "bonus": 2 },
+      { "abilityName": "Charisma", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Common", "Draconic"],
+    "languageDesc": "You can speak, read, and write Common and Draconic.",
+    "traits": ["Breath Weapon (5×30 ft line, Lightning, DEX save)", "Damage Resistance (Lightning)"]
+  },
+  "brass-dragonborn": {
+    "index": "brass-dragonborn",
+    "name": "Draconato Bronze",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Strength", "bonus": 2 },
+      { "abilityName": "Charisma", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Common", "Draconic"],
+    "languageDesc": "You can speak, read, and write Common and Draconic.",
+    "traits": ["Breath Weapon (5×30 ft line, Fire, DEX save)", "Damage Resistance (Fire)"]
+  },
+  "bronze-dragonborn": {
+    "index": "bronze-dragonborn",
+    "name": "Draconato Latão",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Strength", "bonus": 2 },
+      { "abilityName": "Charisma", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Common", "Draconic"],
+    "languageDesc": "You can speak, read, and write Common and Draconic.",
+    "traits": ["Breath Weapon (5×30 ft line, Lightning, DEX save)", "Damage Resistance (Lightning)"]
+  },
+  "copper-dragonborn": {
+    "index": "copper-dragonborn",
+    "name": "Draconato Cobre",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Strength", "bonus": 2 },
+      { "abilityName": "Charisma", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Common", "Draconic"],
+    "languageDesc": "You can speak, read, and write Common and Draconic.",
+    "traits": ["Breath Weapon (5×60 ft cone, Acid, DEX save)", "Damage Resistance (Acid)"]
+  },
+  "gold-dragonborn": {
+    "index": "gold-dragonborn",
+    "name": "Draconato Dourado",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Strength", "bonus": 2 },
+      { "abilityName": "Charisma", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Common", "Draconic"],
+    "languageDesc": "You can speak, read, and write Common and Draconic.",
+    "traits": ["Breath Weapon (15 ft cone, Fire, DEX save)", "Damage Resistance (Fire)"]
+  },
+  "green-dragonborn": {
+    "index": "green-dragonborn",
+    "name": "Draconato Verde",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Strength", "bonus": 2 },
+      { "abilityName": "Charisma", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Common", "Draconic"],
+    "languageDesc": "You can speak, read, and write Common and Draconic.",
+    "traits": ["Breath Weapon (15 ft cone, Poison, CON save)", "Damage Resistance (Poison)"]
+  },
+  "red-dragonborn": {
+    "index": "red-dragonborn",
+    "name": "Draconato Vermelho",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Strength", "bonus": 2 },
+      { "abilityName": "Charisma", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Common", "Draconic"],
+    "languageDesc": "You can speak, read, and write Common and Draconic.",
+    "traits": ["Breath Weapon (15 ft cone, Fire, DEX save)", "Damage Resistance (Fire)"]
+  },
+  "silver-dragonborn": {
+    "index": "silver-dragonborn",
+    "name": "Draconato Prateado",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Strength", "bonus": 2 },
+      { "abilityName": "Charisma", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Common", "Draconic"],
+    "languageDesc": "You can speak, read, and write Common and Draconic.",
+    "traits": ["Breath Weapon (15 ft cone, Cold, CON save)", "Damage Resistance (Cold)"]
+  },
+  "white-dragonborn": {
+    "index": "white-dragonborn",
+    "name": "Draconato Branco",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Medium",
+    "abilityBonuses": [
+      { "abilityName": "Strength", "bonus": 2 },
+      { "abilityName": "Charisma", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": ["Common", "Draconic"],
+    "languageDesc": "You can speak, read, and write Common and Draconic.",
+    "traits": ["Breath Weapon (15 ft cone, Cold, CON save)", "Damage Resistance (Cold)"]
+  }
+}
