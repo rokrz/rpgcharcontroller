@@ -46,7 +46,7 @@ if (require.main === module) {
     port: process.env.PORT || 3001
   }).then(({
     port
-  }) => console.log(`RPG Char Controller backend na porta ${port}`)).catch(err => {
+  }) => console.log(`InnKeeper backend na porta ${port}`)).catch(err => {
     console.error("Erro ao inicializar DB:", err);
     process.exit(1);
   });

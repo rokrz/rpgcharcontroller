@@ -12,7 +12,7 @@ export function downloadJson(filename, obj) {
 
 export function toNativeJson(sheet) {
   return {
-    source: "rpg-char-controller",
+    source: "innkeeper",
     version: 1,
     exportedAt: new Date().toISOString(),
     sheet,

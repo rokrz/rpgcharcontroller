@@ -10,7 +10,7 @@ export default function Header() {
     <header className="sticky top-0 z-40 bg-parchment-deep/95 backdrop-blur border-b border-parchment-edge px-4 py-2 flex items-center justify-between gap-4">
       <Link to="/" className="flex items-center gap-2 no-underline">
         <Sword size={20} className="text-burgundy" />
-        <span className="font-display text-sm uppercase tracking-widest text-ink">RPG Char</span>
+        <span className="font-display text-sm uppercase tracking-widest text-ink">InnKeeper</span>
       </Link>
 
       <div className="flex items-center gap-2">

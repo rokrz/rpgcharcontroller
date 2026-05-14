@@ -1,4 +1,4 @@
-package com.rpgcharcontroller.app;
+package com.innkeeper.app;
 
 import com.getcapacitor.BridgeActivity;
 

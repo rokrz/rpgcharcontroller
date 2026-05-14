@@ -108,7 +108,7 @@ function fromBookerPlayer(player) {
 
 // Returns array of {system, data} ready for api.createSheet
 export function parseImportFile(json) {
-  if (json.source === "rpg-char-controller" && json.sheet) {
+  if ((json.source === "innkeeper" || json.source === "rpg-char-controller") && json.sheet) {
     const s = json.sheet;
     return [{ system: s.system, data: s.data }];
   }
@@ -121,5 +121,5 @@ export function parseImportFile(json) {
   if (Array.isArray(json.campaigns) && Array.isArray(json.players)) {
     return json.players.map(fromBookerPlayer);
   }
-  throw new Error("Formato de arquivo não reconhecido. Esperado: RPGChar nativo, jogador Booker ou exportação completa do Booker.");
+  throw new Error("Formato de arquivo não reconhecido. Esperado: InnKeeper nativo, jogador Booker ou exportação completa do Booker.");
 }

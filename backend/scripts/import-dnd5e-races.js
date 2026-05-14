@@ -16,7 +16,7 @@ async function fetchJson(url) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), HTTP_TIMEOUT_MS);
   try {
-    const res = await fetch(url, { signal: ctrl.signal, headers: { "User-Agent": "RPGCharController-import" } });
+    const res = await fetch(url, { signal: ctrl.signal, headers: { "User-Agent": "InnKeeper-import" } });
     if (!res.ok) throw new Error(`HTTP ${res.status} em ${url}`);
     return await res.json();
   } finally {

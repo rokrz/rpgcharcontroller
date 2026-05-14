@@ -1,4 +1,4 @@
-# RPG Char Controller
+# InnKeeper — RPG Sheet Maker
 
 App de fichas de personagem para jogadores de RPG de mesa. Suporta três sistemas — **D&D 5e**, **Pathfinder 2e** e **Daggerheart** — com fichas completas, edição inline, rastreamento de HP e busca de regras integrada.
 
@@ -37,6 +37,7 @@ App de fichas de personagem para jogadores de RPG de mesa. Suporta três sistema
 | Runtime | Node.js | ≥ 18 |
 | UUID | uuid | 14 |
 | Orquestrador | concurrently | 9 |
+| Mobile | Capacitor + nodejs-mobile-cordova | 6 / 0.4 |
 
 Sem banco de dados externo. Os dados são persistidos em um arquivo `db.json` na pasta de dados do usuário do sistema operacional.
 
@@ -73,7 +74,7 @@ npm run dev:frontend
 
 Acesse: **http://localhost:5174**
 
-### Build de produção
+### Build de produção (web)
 
 ```bash
 cd frontend
@@ -81,13 +82,50 @@ npm run build
 # Output em frontend/dist/
 ```
 
+### Build APK Android
+
+```bash
+# Instalar dependências do módulo mobile
+npm install --prefix mobile
+
+# Build debug (APK gerado em mobile/android/app/build/outputs/apk/debug/)
+npm run build:mobile
+
+# Build release
+npm run build:mobile:release
+
+# build:all faz frontend web + APK debug em sequência
+npm run build:all
+```
+
+**Pré-requisitos para o APK**:
+- JDK 17+ e Android SDK (cmdline-tools / platform-tools / build-tools). Helper de instalação no Windows: [`mobile/install-android-cmdline-tools.ps1`](mobile/install-android-cmdline-tools.ps1).
+- Variáveis de ambiente `JAVA_HOME` e `ANDROID_SDK_ROOT` (ou `ANDROID_HOME`) configuradas.
+- Primeiro build precisa que a pasta `android/` exista — rode `npm run cap:add --prefix mobile` se ela estiver ausente (o script `build:mobile` faz isso automaticamente).
+
+O backend Node.js roda dentro do APK via **nodejs-mobile-cordova** e o frontend é servido pelo WebView do Capacitor. Os dados ficam no storage privado do app no Android — não compartilhados com a versão desktop.
+
 ---
 
 ## Estrutura do projeto
 
 ```
-RPGCharController/
-├── package.json              ← scripts do monorepo (dev, dev:backend, dev:frontend)
+InnKeeper/
+├── package.json              ← scripts do monorepo (dev, build:mobile, build:all)
+│
+├── mobile/
+│   ├── package.json          ← scripts do APK (bundle, cap:sync, gradle:debug/release, build:debug/release)
+│   ├── capacitor.config.ts
+│   ├── install-android-cmdline-tools.ps1  ← helper de instalação do Android SDK no Windows
+│   ├── scripts/
+│   │   ├── bundle-frontend.js    ← copia frontend/dist → www/
+│   │   ├── bundle-backend.js     ← copia backend (com dados bundled) → nodejs-assets/
+│   │   ├── sync-nodejs-mobile.js ← patches pós cap:sync (nodejs-mobile-cordova)
+│   │   ├── gradle-build.js       ← wrap do gradlew assembleDebug/Release
+│   │   └── verify-apk.js         ← sanity-check do APK gerado
+│   ├── android/                  ← projeto Android gerado pelo Capacitor
+│   ├── nodejs-assets/            ← backend embarcado para nodejs-mobile
+│   └── www/                      ← frontend buildado servido pelo WebView
 │
 ├── backend/
 │   ├── package.json
@@ -100,15 +138,19 @@ RPGCharController/
 │   │   │   ├── sheets.js     ← CRUD REST de fichas
 │   │   │   └── proxy.js      ← proxies para APIs externas
 │   │   └── systems/
-│   │       ├── dnd5eProxy.js      ← busca em dnd5eapi.co
+│   │       ├── dnd5eProxy.js      ← busca em dnd5eapi.co (spells, items, features, monsters, races)
 │   │       ├── pf2eSearch.js      ← busca nos JSONs bundled
 │   │       └── daggerheartProxy.js ← busca via GraphQL + fallback
+│   ├── scripts/
+│   │   ├── ensure-dnd5e-races.js  ← garante que dnd5e_races.json existe (idempotente)
+│   │   └── import-dnd5e-races.js  ← baixa raças D&D 5e da Open5e API → dnd5e_races.json
 │   └── data/
-│       └── pf2e/             ← JSONs com dados do Pathfinder 2e
-│           ├── spells.json
-│           ├── items.json
-│           ├── feats.json
-│           └── actions.json
+│       ├── pf2e/             ← JSONs com dados do Pathfinder 2e
+│       │   ├── spells.json
+│       │   ├── items.json
+│       │   ├── feats.json
+│       │   └── actions.json
+│       └── dnd5e_races.json  ← gerado por import-dnd5e-races.js (~40 raças SRD)
 │
 └── frontend/
     ├── package.json
@@ -123,7 +165,8 @@ RPGCharController/
         ├── pages/
         │   ├── HomePage.jsx        ← grid de fichas existentes
         │   ├── CreateSheetPage.jsx ← seleção de sistema + nome
-        │   └── SheetPage.jsx       ← carrega ficha e renderiza componente do sistema
+        │   ├── SheetPage.jsx       ← carrega ficha e renderiza componente do sistema
+        │   └── PrintPage.jsx       ← renderiza a ficha em modo impressão e aciona window.print()
         │
         ├── components/
         │   ├── Header.jsx          ← barra superior fixa com navegação e toggle de tema
@@ -184,7 +227,7 @@ React (porta 5174)
   ▼
 Vite dev proxy ──► Express (porta 3001)
                       │
-                      ├── /api/sheets  →  db.json (APPDATA/RPGCharController/)
+                      ├── /api/sheets  →  db.json (APPDATA/InnKeeper/)
                       │
                       └── /api/proxy
                               ├── /dnd5e  →  dnd5eapi.co (REST externo)
@@ -358,6 +401,7 @@ Destaques:
 - Magias por nível com checkbox "preparada" (exceto cantrips)
 - Dados de morte com 3 checkboxes de sucesso e 3 de falha
 - Inventário com flag "equipado" e campos de moeda (CP/SP/EP/GP/PP)
+- **Raças**: busca no dropdown de raça conectada ao endpoint `/api/proxy/dnd5e?type=races` — dados gerados por `backend/scripts/import-dnd5e-races.js` (Open5e SRD, ~40 raças). Script idempotente: `node backend/scripts/ensure-dnd5e-races.js` baixa apenas se o arquivo ainda não existir.
 - Busca via **dnd5eapi.co** (REST, SRD, sem autenticação)
 
 ### Pathfinder 2e — `pf2e`
@@ -424,10 +468,12 @@ O banco de dados é um único arquivo JSON com escrita atômica:
 
 | SO | Caminho |
 |---|---|
-| Windows | `%APPDATA%\RPGCharController\db.json` |
-| Linux/macOS | `~/.rpg-char-controller/db.json` |
+| Windows | `%APPDATA%\InnKeeper\db.json` |
+| Linux/macOS | `~/.innkeeper/db.json` |
 
 Pode ser sobrescrito via variável de ambiente `RPG_DATA_DIR`.
+
+> **Migrando de versões antigas**: se você já usava o app como RPGCharController, o `db.json` ficava em `%APPDATA%/RPGCharController` (Windows) ou `~/.rpg-char-controller` (Linux/macOS). Renomeie (ou copie) essa pasta para o novo nome antes de iniciar o app com o novo nome.
 
 ### Estrutura do `db.json`
 
@@ -488,6 +534,36 @@ Usa o [Daggerheart SRD API](https://github.com/nategarrow/daggerheart-srd-api) �
 
 ---
 
+## Impressão de fichas
+
+- Rota `/print/:id` renderiza a ficha no `PrintPage.jsx`, que carrega o componente `PrintSheet` correspondente ao sistema e dispara `window.print()` após 400 ms.
+- Cada sistema tem seu próprio componente de impressão em `frontend/src/systems/<id>/PrintSheet.jsx`, otimizado para papel com CSS `@media print`.
+- Um botão "← Voltar ao app" é exibido acima da ficha fora do modo de impressão.
+- Acesso direto pela URL `/print/:id` ou via botão na SheetPage.
+
+---
+
+## APK Android
+
+O módulo [mobile/](mobile/) empacota o app completo como APK usando a mesma stack do [Booker](../Tracker-back_front):
+
+- **Capacitor** serve o frontend React via WebView.
+- **nodejs-mobile-cordova** embarca o backend Express dentro do APK, rodando em segundo plano.
+- O frontend acessa o backend via `http://localhost:3001` (mesmo endereço do dev).
+- Dados ficam no storage privado do app no Android (`%APPDATA%` equivalente do Android) — não compartilhados com a versão web/desktop.
+
+Scripts disponíveis na **raiz** do monorepo:
+
+| Comando | O que faz |
+|---|---|
+| `npm run build:mobile` | Bundle frontend + backend → APK debug |
+| `npm run build:mobile:release` | Idem, APK release assinado |
+| `npm run build:all` | Build web (`frontend/dist`) + APK debug |
+
+Ver [Build APK Android](#build-apk-android) acima para pré-requisitos detalhados.
+
+---
+
 ## Adicionando um novo sistema
 
 1. **Crie a pasta** `frontend/src/systems/<id>/`
@@ -541,4 +617,4 @@ O `CreateSheetPage` e o `SheetPage` detectam o novo sistema automaticamente via 
 | Variável | Padrão | Descrição |
 |---|---|---|
 | `PORT` | `3001` | Porta do backend Express |
-| `RPG_DATA_DIR` | `%APPDATA%/RPGCharController` | Diretório do `db.json` |
+| `RPG_DATA_DIR` | `%APPDATA%/InnKeeper` | Diretório do `db.json` |

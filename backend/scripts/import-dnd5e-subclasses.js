@@ -20,7 +20,7 @@ async function fetchJson(url) {
   try {
     const res = await fetch(url, {
       signal: ctrl.signal,
-      headers: { "User-Agent": "RPGCharController-import" },
+      headers: { "User-Agent": "InnKeeper-import" },
     });
     if (!res.ok) throw new Error(`HTTP ${res.status} em ${url}`);
     return await res.json();

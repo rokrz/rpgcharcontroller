@@ -4,8 +4,8 @@ const os = require("os");
 const DEFAULT_DATA_DIR =
   process.env.RPG_DATA_DIR ||
   (process.env.APPDATA
-    ? path.join(process.env.APPDATA, "RPGCharController")
-    : path.join(os.homedir(), ".rpg-char-controller"));
+    ? path.join(process.env.APPDATA, "InnKeeper")
+    : path.join(os.homedir(), ".innkeeper"));
 
 module.exports = {
   DATA_DIR: DEFAULT_DATA_DIR,

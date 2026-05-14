@@ -1,5 +1,5 @@
 {
-  "name": "rpgcharcontroller-mobile-backend",
+  "name": "innkeeper-mobile-backend",
   "version": "1.0.0",
   "private": true,
   "description": "Bundle Node embarcado no APK -- regerado por mobile/scripts/bundle-backend.js. NAO editar a mao.",

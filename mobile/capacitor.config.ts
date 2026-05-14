@@ -8,8 +8,8 @@ import type { CapacitorConfig } from "@capacitor/cli";
 // embarcado ja esta servindo o frontend React real (copia de frontend/dist).
 
 const config: CapacitorConfig = {
-  appId: "com.rpgcharcontroller.app",
-  appName: "RPG Char Controller",
+  appId: "com.innkeeper.app",
+  appName: "InnKeeper",
   webDir: "www",
   // Permite navegar pra hosts http://localhost e 127.0.0.1 (servidor embarcado).
   server: {

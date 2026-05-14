@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 
 export const ThemeContext = createContext(null);
 
-const STORAGE_KEY = "rpg-char-theme";
+const STORAGE_KEY = "innkeeper-theme";
 
 function readInitialTheme() {
   if (typeof window === "undefined") return "light";

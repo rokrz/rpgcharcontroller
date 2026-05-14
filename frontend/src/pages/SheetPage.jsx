@@ -60,7 +60,7 @@ export default function SheetPage() {
 
   function handleExportNative() {
     const slug = (sheet.data?.name || "personagem").toLowerCase().replace(/\s+/g, "-");
-    downloadJson(`${slug}.rpgchar.json`, toNativeJson(sheet));
+    downloadJson(`${slug}.innkeeper.json`, toNativeJson(sheet));
     setExportOpen(false);
   }
 

@@ -35,7 +35,7 @@ module.exports = { app, start };
 if (require.main === module) {
   start({ port: process.env.PORT || 3001 })
     .then(({ port }) =>
-      console.log(`RPG Char Controller backend na porta ${port}`)
+      console.log(`InnKeeper backend na porta ${port}`)
     )
     .catch((err) => {
       console.error("Erro ao inicializar DB:", err);
