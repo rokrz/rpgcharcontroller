@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "./context/ThemeContext.jsx";
 import { RulesWindowProvider } from "./context/RulesWindowContext.jsx";
+import { TutorialProvider } from "./context/TutorialContext.jsx";
+import { ActiveSheetProvider } from "./context/ActiveSheetContext.jsx";
 import MainLayout from "./components/MainLayout.jsx";
 import RulesWindowLayer from "./components/RulesWindow.jsx";
 import HomePage from "./pages/HomePage.jsx";
@@ -11,6 +13,8 @@ import PrintPage from "./pages/PrintPage.jsx";
 export default function App() {
   return (
     <ThemeProvider>
+      <TutorialProvider>
+        <ActiveSheetProvider>
       <RulesWindowProvider>
         <BrowserRouter>
           <Routes>
@@ -24,6 +28,8 @@ export default function App() {
           <RulesWindowLayer />
         </BrowserRouter>
       </RulesWindowProvider>
+        </ActiveSheetProvider>
+      </TutorialProvider>
     </ThemeProvider>
   );
 }

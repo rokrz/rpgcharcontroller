@@ -45,7 +45,7 @@ export default function CreateSheetPage() {
       <h2 className="font-display text-2xl text-ink mb-1">Nova Ficha</h2>
       <p className="text-ink-muted font-serif mb-8">Escolha o sistema de RPG para sua ficha.</p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div data-tutorial="system-cards" className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         {SYSTEM_LIST.map((sys) => {
           const Icon = ICONS[sys.id] || Sword;
           const isActive = selectedSystem === sys.id;
@@ -64,7 +64,7 @@ export default function CreateSheetPage() {
       </div>
 
       {selectedSystem && (
-        <div className="space-y-6">
+        <div data-tutorial="sheet-name" className="space-y-6">
           <Input
             label="Nome do personagem"
             placeholder="Ex: Aragorn, Seoni, Zephyr..."

@@ -2,6 +2,7 @@
   "name": "innkeeper",
   "private": true,
   "version": "0.1.0",
+  "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
     "dev:backend": "npm run dev --prefix backend",
@@ -13,6 +14,8 @@
     "build:all": "npm run build --prefix frontend && npm run build:mobile"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.2.1",
+    "sharp": "^0.34.5",
+    "to-ico": "^1.1.5"
   }
 }
