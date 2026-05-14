@@ -70,5 +70,6 @@ export function createDnd5eSheet(name = "Personagem") {
     languages: "",
 
     multiclasses: [],
+    appliedRaceBonuses: {},
   };
 }

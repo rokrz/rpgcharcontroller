@@ -12,6 +12,7 @@ db.json
 backend/src/data/dnd5e_subclasses.json
 backend/src/data/dnd5e_races.json
 backend/src/data/dnd5e_classfeatures_srd.json
+backend/src/data/dnd5e_backgrounds_supplement.json
 
 # Variáveis de ambiente
 .env
@@ -24,6 +25,9 @@ npm-debug.log*
 
 # Cache do Vite
 frontend/.vite/
+
+# Mobile - assets gerados pelo Capacitor (bundle web de saída)
+mobile/www/
 
 # Editor
 .vscode/

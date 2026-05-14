@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { searchDnd5e, getClassFeatures, getSubclasses, getSubclassFeatures, getRaceDetails, getBackgroundDetails, searchClassSpells, getRaceList } = require("../systems/dnd5eProxy");
+const { searchDnd5e, getClassFeatures, getSubclasses, getSubclassFeatures, getRaceDetails, getBackgroundDetails, getClassDetails, searchClassSpells, getRaceList } = require("../systems/dnd5eProxy");
 const { searchPf2e, searchClassFeats } = require("../systems/pf2eSearch");
 const { searchDaggerheart, getClassCards } = require("../systems/daggerheartProxy");
 
@@ -30,6 +30,10 @@ router.get("/dnd5e", async (req, res) => {
     }
     if (type === "backgrounddetail") {
       const data = await getBackgroundDetails(index.toLowerCase());
+      return data ? res.json(data) : res.status(404).json({ error: "Not found" });
+    }
+    if (type === "classdetail") {
+      const data = await getClassDetails(index.toLowerCase());
       return data ? res.json(data) : res.status(404).json({ error: "Not found" });
     }
     if (type === "classspells") {

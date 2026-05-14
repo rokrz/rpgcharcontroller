@@ -1,0 +1,558 @@
+{
+  "artificer": [
+    {
+      "index": "alchemist",
+      "name": "Alchemist",
+      "source": "TCE"
+    },
+    {
+      "index": "armorer",
+      "name": "Armorer",
+      "source": "TCE"
+    },
+    {
+      "index": "artillerist",
+      "name": "Artillerist",
+      "source": "TCE"
+    },
+    {
+      "index": "battle-smith",
+      "name": "Battle Smith",
+      "source": "TCE"
+    }
+  ],
+  "barbarian": [
+    {
+      "index": "ancestral-guardian",
+      "name": "Path of the Ancestral Guardian",
+      "source": "XGE"
+    },
+    {
+      "index": "beast",
+      "name": "Path of the Beast",
+      "source": "TCE"
+    },
+    {
+      "index": "berserker",
+      "name": "Path of the Berserker",
+      "source": "PHB"
+    },
+    {
+      "index": "storm-herald",
+      "name": "Path of the Storm Herald",
+      "source": "XGE"
+    },
+    {
+      "index": "totem-warrior",
+      "name": "Path of the Totem Warrior",
+      "source": "PHB"
+    },
+    {
+      "index": "zealot",
+      "name": "Path of the Zealot",
+      "source": "XGE"
+    },
+    {
+      "index": "wild-magic-barbarian",
+      "name": "Path of Wild Magic",
+      "source": "TCE"
+    }
+  ],
+  "bard": [
+    {
+      "index": "creation",
+      "name": "College of Creation",
+      "source": "TCE"
+    },
+    {
+      "index": "eloquence",
+      "name": "College of Eloquence",
+      "source": "TCE"
+    },
+    {
+      "index": "glamour",
+      "name": "College of Glamour",
+      "source": "XGE"
+    },
+    {
+      "index": "lore",
+      "name": "College of Lore",
+      "source": "PHB"
+    },
+    {
+      "index": "swords",
+      "name": "College of Swords",
+      "source": "XGE"
+    },
+    {
+      "index": "valor",
+      "name": "College of Valor",
+      "source": "PHB"
+    },
+    {
+      "index": "whispers",
+      "name": "College of Whispers",
+      "source": "XGE"
+    }
+  ],
+  "cleric": [
+    {
+      "index": "death",
+      "name": "Death Domain",
+      "source": "PHB"
+    },
+    {
+      "index": "forge",
+      "name": "Forge Domain",
+      "source": "XGE"
+    },
+    {
+      "index": "grave",
+      "name": "Grave Domain",
+      "source": "XGE"
+    },
+    {
+      "index": "knowledge",
+      "name": "Knowledge Domain",
+      "source": "PHB"
+    },
+    {
+      "index": "life",
+      "name": "Life Domain",
+      "source": "PHB"
+    },
+    {
+      "index": "light",
+      "name": "Light Domain",
+      "source": "PHB"
+    },
+    {
+      "index": "nature",
+      "name": "Nature Domain",
+      "source": "PHB"
+    },
+    {
+      "index": "order",
+      "name": "Order Domain",
+      "source": "TCE"
+    },
+    {
+      "index": "peace",
+      "name": "Peace Domain",
+      "source": "TCE"
+    },
+    {
+      "index": "tempest",
+      "name": "Tempest Domain",
+      "source": "PHB"
+    },
+    {
+      "index": "trickery",
+      "name": "Trickery Domain",
+      "source": "PHB"
+    },
+    {
+      "index": "twilight",
+      "name": "Twilight Domain",
+      "source": "TCE"
+    },
+    {
+      "index": "war",
+      "name": "War Domain",
+      "source": "PHB"
+    }
+  ],
+  "druid": [
+    {
+      "index": "dreams",
+      "name": "Circle of Dreams",
+      "source": "XGE"
+    },
+    {
+      "index": "spores",
+      "name": "Circle of Spores",
+      "source": "TCE"
+    },
+    {
+      "index": "stars",
+      "name": "Circle of Stars",
+      "source": "TCE"
+    },
+    {
+      "index": "land",
+      "name": "Circle of the Land",
+      "source": "PHB"
+    },
+    {
+      "index": "moon",
+      "name": "Circle of the Moon",
+      "source": "PHB"
+    },
+    {
+      "index": "shepherd",
+      "name": "Circle of the Shepherd",
+      "source": "XGE"
+    },
+    {
+      "index": "wildfire",
+      "name": "Circle of Wildfire",
+      "source": "TCE"
+    }
+  ],
+  "fighter": [
+    {
+      "index": "arcane-archer",
+      "name": "Arcane Archer",
+      "source": "XGE"
+    },
+    {
+      "index": "battle-master",
+      "name": "Battle Master",
+      "source": "PHB"
+    },
+    {
+      "index": "cavalier",
+      "name": "Cavalier",
+      "source": "XGE"
+    },
+    {
+      "index": "champion",
+      "name": "Champion",
+      "source": "PHB"
+    },
+    {
+      "index": "echo-knight",
+      "name": "Echo Knight",
+      "source": "EGW"
+    },
+    {
+      "index": "eldritch-knight",
+      "name": "Eldritch Knight",
+      "source": "PHB"
+    },
+    {
+      "index": "psi-warrior",
+      "name": "Psi Warrior",
+      "source": "TCE"
+    },
+    {
+      "index": "rune-knight",
+      "name": "Rune Knight",
+      "source": "TCE"
+    },
+    {
+      "index": "samurai",
+      "name": "Samurai",
+      "source": "XGE"
+    }
+  ],
+  "monk": [
+    {
+      "index": "mercy",
+      "name": "Way of Mercy",
+      "source": "TCE"
+    },
+    {
+      "index": "shadow",
+      "name": "Way of Shadow",
+      "source": "PHB"
+    },
+    {
+      "index": "astral-self",
+      "name": "Way of the Astral Self",
+      "source": "TCE"
+    },
+    {
+      "index": "drunken-master",
+      "name": "Way of the Drunken Master",
+      "source": "XGE"
+    },
+    {
+      "index": "four-elements",
+      "name": "Way of the Four Elements",
+      "source": "PHB"
+    },
+    {
+      "index": "kensei",
+      "name": "Way of the Kensei",
+      "source": "XGE"
+    },
+    {
+      "index": "open-hand",
+      "name": "Way of the Open Hand",
+      "source": "PHB"
+    },
+    {
+      "index": "sun-soul",
+      "name": "Way of the Sun Soul",
+      "source": "XGE"
+    }
+  ],
+  "paladin": [
+    {
+      "index": "conquest",
+      "name": "Oath of Conquest",
+      "source": "XGE"
+    },
+    {
+      "index": "devotion",
+      "name": "Oath of Devotion",
+      "source": "PHB"
+    },
+    {
+      "index": "glory",
+      "name": "Oath of Glory",
+      "source": "TCE"
+    },
+    {
+      "index": "redemption",
+      "name": "Oath of Redemption",
+      "source": "XGE"
+    },
+    {
+      "index": "ancients",
+      "name": "Oath of the Ancients",
+      "source": "PHB"
+    },
+    {
+      "index": "watchers",
+      "name": "Oath of the Watchers",
+      "source": "TCE"
+    },
+    {
+      "index": "vengeance",
+      "name": "Oath of Vengeance",
+      "source": "PHB"
+    },
+    {
+      "index": "oathbreaker",
+      "name": "Oathbreaker",
+      "source": "PHB"
+    }
+  ],
+  "ranger": [
+    {
+      "index": "beast-master",
+      "name": "Beast Master",
+      "source": "PHB"
+    },
+    {
+      "index": "fey-wanderer",
+      "name": "Fey Wanderer",
+      "source": "TCE"
+    },
+    {
+      "index": "gloom-stalker",
+      "name": "Gloom Stalker",
+      "source": "XGE"
+    },
+    {
+      "index": "horizon-walker",
+      "name": "Horizon Walker",
+      "source": "XGE"
+    },
+    {
+      "index": "hunter",
+      "name": "Hunter",
+      "source": "PHB"
+    },
+    {
+      "index": "monster-slayer",
+      "name": "Monster Slayer",
+      "source": "XGE"
+    },
+    {
+      "index": "swarmkeeper",
+      "name": "Swarmkeeper",
+      "source": "TCE"
+    }
+  ],
+  "rogue": [
+    {
+      "index": "arcane-trickster",
+      "name": "Arcane Trickster",
+      "source": "PHB"
+    },
+    {
+      "index": "assassin",
+      "name": "Assassin",
+      "source": "PHB"
+    },
+    {
+      "index": "inquisitive",
+      "name": "Inquisitive",
+      "source": "XGE"
+    },
+    {
+      "index": "mastermind",
+      "name": "Mastermind",
+      "source": "XGE"
+    },
+    {
+      "index": "phantom",
+      "name": "Phantom",
+      "source": "TCE"
+    },
+    {
+      "index": "scout",
+      "name": "Scout",
+      "source": "XGE"
+    },
+    {
+      "index": "soulknife",
+      "name": "Soulknife",
+      "source": "TCE"
+    },
+    {
+      "index": "swashbuckler",
+      "name": "Swashbuckler",
+      "source": "XGE"
+    },
+    {
+      "index": "thief",
+      "name": "Thief",
+      "source": "PHB"
+    }
+  ],
+  "sorcerer": [
+    {
+      "index": "aberrant-mind",
+      "name": "Aberrant Mind",
+      "source": "TCE"
+    },
+    {
+      "index": "clockwork-soul",
+      "name": "Clockwork Soul",
+      "source": "TCE"
+    },
+    {
+      "index": "divine-soul",
+      "name": "Divine Soul",
+      "source": "XGE"
+    },
+    {
+      "index": "draconic",
+      "name": "Draconic Bloodline",
+      "source": "PHB"
+    },
+    {
+      "index": "shadow-magic",
+      "name": "Shadow Magic",
+      "source": "XGE"
+    },
+    {
+      "index": "storm-sorcery",
+      "name": "Storm Sorcery",
+      "source": "XGE"
+    },
+    {
+      "index": "wild-magic",
+      "name": "Wild Magic",
+      "source": "PHB"
+    }
+  ],
+  "warlock": [
+    {
+      "index": "archfey",
+      "name": "The Archfey",
+      "source": "PHB"
+    },
+    {
+      "index": "celestial",
+      "name": "The Celestial",
+      "source": "XGE"
+    },
+    {
+      "index": "fathomless",
+      "name": "The Fathomless",
+      "source": "TCE"
+    },
+    {
+      "index": "fiend",
+      "name": "The Fiend",
+      "source": "PHB"
+    },
+    {
+      "index": "genie",
+      "name": "The Genie",
+      "source": "TCE"
+    },
+    {
+      "index": "great-old-one",
+      "name": "The Great Old One",
+      "source": "PHB"
+    },
+    {
+      "index": "hexblade",
+      "name": "The Hexblade",
+      "source": "XGE"
+    }
+  ],
+  "wizard": [
+    {
+      "index": "bladesinging",
+      "name": "Bladesinging",
+      "source": "SCAG"
+    },
+    {
+      "index": "chronurgy",
+      "name": "Chronurgy Magic",
+      "source": "EGW"
+    },
+    {
+      "index": "graviturgy",
+      "name": "Graviturgy Magic",
+      "source": "EGW"
+    },
+    {
+      "index": "order-of-scribes",
+      "name": "Order of Scribes",
+      "source": "TCE"
+    },
+    {
+      "index": "abjuration",
+      "name": "School of Abjuration",
+      "source": "PHB"
+    },
+    {
+      "index": "conjuration",
+      "name": "School of Conjuration",
+      "source": "PHB"
+    },
+    {
+      "index": "divination",
+      "name": "School of Divination",
+      "source": "PHB"
+    },
+    {
+      "index": "enchantment",
+      "name": "School of Enchantment",
+      "source": "PHB"
+    },
+    {
+      "index": "evocation",
+      "name": "School of Evocation",
+      "source": "PHB"
+    },
+    {
+      "index": "illusion",
+      "name": "School of Illusion",
+      "source": "PHB"
+    },
+    {
+      "index": "necromancy",
+      "name": "School of Necromancy",
+      "source": "PHB"
+    },
+    {
+      "index": "transmutation",
+      "name": "School of Transmutation",
+      "source": "PHB"
+    },
+    {
+      "index": "war-magic",
+      "name": "War Magic",
+      "source": "XGE"
+    }
+  ]
+}

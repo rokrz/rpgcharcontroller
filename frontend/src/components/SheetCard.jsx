@@ -32,7 +32,11 @@ export default function SheetCard({ sheet, onDelete }) {
                 </span>
               )}
               {d.ancestry && (
-                <span className="text-xs text-ink-muted font-serif">{d.ancestry}</span>
+                <span className="text-xs text-ink-muted font-serif">
+                  {typeof d.ancestry === "object"
+                    ? [d.ancestry.primary, d.ancestry.secondary].filter(Boolean).join(" + ")
+                    : d.ancestry}
+                </span>
               )}
             </div>
           </div>

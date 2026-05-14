@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../services/api.js";
 
 import Dnd5ePrintSheet       from "../systems/dnd5e/PrintSheet.jsx";
@@ -14,6 +14,7 @@ const PRINT_SHEETS = {
 
 export default function PrintPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [sheet, setSheet]   = useState(null);
   const [error, setError]   = useState(null);
 
@@ -43,6 +44,25 @@ export default function PrintPage() {
 
   return (
     <div style={{ padding: "12px", maxWidth: "960px", margin: "0 auto" }}>
+      <div className="print:hidden" style={{ marginBottom: "16px" }}>
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            fontFamily: "var(--font-display, Georgia, serif)",
+            fontSize: "12px",
+            textTransform: "uppercase",
+            letterSpacing: "0.08em",
+            color: "#5a4a3a",
+            background: "none",
+            border: "1px solid #c8b89a",
+            borderRadius: "4px",
+            padding: "6px 14px",
+            cursor: "pointer",
+          }}
+        >
+          ← Voltar ao app
+        </button>
+      </div>
       <PrintSheet data={sheet.data} />
     </div>
   );

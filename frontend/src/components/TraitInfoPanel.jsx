@@ -3,15 +3,34 @@ import { Info, ChevronDown, ChevronUp, Plus, Check } from "lucide-react";
 import Card from "./ui/Card.jsx";
 
 const ABILITY_PT = {
-  Strength: "Força", Dexterity: "Destreza", Constitution: "Constituição",
-  Intelligence: "Inteligência", Wisdom: "Sabedoria", Charisma: "Carisma",
+  Strength: "Força",        STR: "Força",
+  Dexterity: "Destreza",    DEX: "Destreza",
+  Constitution: "Constituição", CON: "Constituição",
+  Intelligence: "Inteligência", INT: "Inteligência",
+  Wisdom: "Sabedoria",      WIS: "Sabedoria",
+  Charisma: "Carisma",      CHA: "Carisma",
 };
+
+const ABILITY_KEY = {
+  Strength: "str", STR: "str",
+  Dexterity: "dex", DEX: "dex",
+  Constitution: "con", CON: "con",
+  Intelligence: "int", INT: "int",
+  Wisdom: "wis", WIS: "wis",
+  Charisma: "cha", CHA: "cha",
+};
+
+const DND5E_LANGUAGES = [
+  "Comum", "Anão", "Élfico", "Gigante", "Gnômico", "Goblin",
+  "Halfling", "Orc", "Abissal", "Celestial", "Dracônico",
+  "Fala Profunda", "Infernal", "Primordial", "Silvano", "Subcomum",
+];
 
 function alreadyIn(field, value) {
   return (field || "").toLowerCase().includes(value.toLowerCase());
 }
 
-export default function TraitInfoPanel({ details, type, data, onApplySkill, onAppendLanguage, onAppendProficiency, onAddTrait }) {
+export default function TraitInfoPanel({ details, type, data, onApplySkill, onAppendLanguage, onAppendProficiency, onAddTrait, onApplyAbilityBonus }) {
   const [open, setOpen] = useState(true);
   const [featureOpen, setFeatureOpen] = useState(false);
 
@@ -23,6 +42,7 @@ export default function TraitInfoPanel({ details, type, data, onApplySkill, onAp
     details.otherProficiencies?.length > 0 ||
     details.languages?.length > 0 ||
     details.traits?.length > 0 ||
+    details.languageOptions > 0 ||
     details.feature;
 
   if (!hasContent) return null;
@@ -46,15 +66,40 @@ export default function TraitInfoPanel({ details, type, data, onApplySkill, onAp
 
       {open && (
         <Card.Body className="space-y-2.5 pt-1">
-          {/* Bônus de atributo — informativo */}
+          {/* Bônus de atributo */}
           {details.abilityBonuses?.length > 0 && (
             <div>
               <p className="font-display text-[9px] uppercase tracking-widest text-ink-faded mb-1">Bônus de Atributo</p>
-              <p className="text-xs font-serif text-ink-muted">
-                {details.abilityBonuses
-                  .map((b) => `${b.bonus >= 0 ? "+" : ""}${b.bonus} ${ABILITY_PT[b.abilityName] || b.abilityName}`)
-                  .join(", ")}
-              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {details.abilityBonuses.map((b) => {
+                  const abilityKey = ABILITY_KEY[b.abilityName];
+                  const label = `${b.bonus >= 0 ? "+" : ""}${b.bonus} ${ABILITY_PT[b.abilityName] || b.abilityName}`;
+                  const already = abilityKey && (data?.appliedRaceBonuses?.[details.index] || []).includes(abilityKey);
+                  if (!onApplyAbilityBonus || !abilityKey) {
+                    return (
+                      <span key={b.abilityName} className="text-xs font-serif px-2 py-0.5 rounded-sheet border border-parchment-edge text-ink-muted">
+                        {label}
+                      </span>
+                    );
+                  }
+                  return (
+                    <button
+                      key={b.abilityName}
+                      onClick={() => !already && onApplyAbilityBonus(abilityKey, b.bonus, details.index)}
+                      disabled={already}
+                      title={already ? "Já aplicado" : "Aplicar bônus ao atributo"}
+                      className={`flex items-center gap-1 text-xs font-serif px-2 py-0.5 rounded-sheet border transition ${
+                        already
+                          ? "border-hp-healthy/40 text-hp-healthy cursor-default"
+                          : "border-parchment-edge text-ink hover:border-burgundy hover:text-burgundy"
+                      }`}
+                    >
+                      {already ? <Check size={10} /> : <Plus size={10} />}
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
 
@@ -147,9 +192,48 @@ export default function TraitInfoPanel({ details, type, data, onApplySkill, onAp
 
           {/* Escolha de idiomas (backgrounds) */}
           {details.languageOptions > 0 && (
-            <p className="text-[10px] text-ink-faded font-serif italic">
-              Escolha {details.languageOptions} idioma{details.languageOptions > 1 ? "s" : ""} adicionais.
-            </p>
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <p className="font-display text-[9px] uppercase tracking-widest text-ink-faded">
+                  Escolha de Idiomas
+                </p>
+                {(() => {
+                  const picked = DND5E_LANGUAGES.filter((l) => alreadyIn(data?.languages, l)).length;
+                  const max = details.languageOptions;
+                  return (
+                    <span className={`text-[9px] font-display tabular-nums ${picked >= max ? "text-hp-healthy" : "text-ink-faded"}`}>
+                      {picked}/{max}
+                    </span>
+                  );
+                })()}
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {DND5E_LANGUAGES.map((lang) => {
+                  const already = alreadyIn(data?.languages, lang);
+                  const picked = DND5E_LANGUAGES.filter((l) => alreadyIn(data?.languages, l)).length;
+                  const maxReached = picked >= details.languageOptions;
+                  const disabled = already || maxReached;
+                  return (
+                    <button
+                      key={lang}
+                      onClick={() => !disabled && onAppendLanguage(lang)}
+                      disabled={disabled}
+                      title={already ? "Já adicionado" : maxReached ? "Limite atingido" : "Adicionar idioma"}
+                      className={`flex items-center gap-1 text-xs font-serif px-2 py-0.5 rounded-sheet border transition ${
+                        already
+                          ? "border-hp-healthy/40 text-hp-healthy cursor-default"
+                          : maxReached
+                          ? "border-parchment-edge text-ink-faded cursor-not-allowed opacity-40"
+                          : "border-parchment-edge text-ink hover:border-burgundy hover:text-burgundy"
+                      }`}
+                    >
+                      {already ? <Check size={10} /> : <Plus size={10} />}
+                      {lang}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           )}
 
           {/* Traços da raça */}

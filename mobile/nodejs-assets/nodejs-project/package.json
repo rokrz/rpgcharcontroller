@@ -1,0 +1,12 @@
+{
+  "name": "rpgcharcontroller-mobile-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Bundle Node embarcado no APK -- regerado por mobile/scripts/bundle-backend.js. NAO editar a mao.",
+  "main": "main.js",
+  "dependencies": {
+    "express": "^4.21.2",
+    "cors": "^2.8.6",
+    "uuid": "^9.0.1"
+  }
+}

@@ -5,7 +5,12 @@
   "scripts": {
     "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
     "dev:backend": "npm run dev --prefix backend",
-    "dev:frontend": "npm run dev --prefix frontend"
+    "dev:frontend": "npm run dev --prefix frontend",
+    "build:mobile:bundle": "npm run bundle --prefix mobile",
+    "build:mobile:debug": "npm run build:mobile:bundle && npm --prefix mobile run cap:sync && npm --prefix mobile run gradle:debug",
+    "build:mobile:release": "npm run build:mobile:bundle && npm --prefix mobile run cap:sync && npm --prefix mobile run gradle:release",
+    "build:mobile": "npm run build:mobile:debug",
+    "build:all": "npm run build --prefix frontend && npm run build:mobile"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

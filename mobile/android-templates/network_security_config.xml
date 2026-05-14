@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Network security config para o D&D Tracker Android.
+
+  Permite cleartext HTTP APENAS para localhost e 127.0.0.1, que e como o
+  WebView fala com o Express embarcado. Resto da web continua bloqueado pra
+  cleartext (HTTPS only).
+
+  COMO USAR:
+  Depois de rodar `npx cap add android`:
+  1. Copiar este arquivo para:
+     mobile/android/app/src/main/res/xml/network_security_config.xml
+     (criar a pasta xml/ se nao existir)
+  2. No mobile/android/app/src/main/AndroidManifest.xml, adicionar no <application>:
+     android:networkSecurityConfig="@xml/network_security_config"
+     android:usesCleartextTraffic="true"
+     android:screenOrientation="sensorLandscape"
+
+  Ou rodar mobile/scripts/post-cap-add.js que automatiza isso (TODO se ficar
+  chato repetir manualmente).
+-->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">localhost</domain>
+        <domain includeSubdomains="false">127.0.0.1</domain>
+    </domain-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

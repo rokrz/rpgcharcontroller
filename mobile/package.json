@@ -1,0 +1,33 @@
+{
+  "name": "rpgcharcontroller-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Wrapper Capacitor + nodejs-mobile pra empacotar o RPGCharController como APK Android.",
+  "scripts": {
+    "bundle:backend": "node scripts/bundle-backend.js",
+    "bundle:frontend": "node scripts/bundle-frontend.js",
+    "bundle": "npm run bundle:frontend && npm run bundle:backend",
+    "cap:add": "npx cap add android",
+    "cap:sync": "npx cap sync android && node scripts/sync-nodejs-mobile.js",
+    "cap:open": "npx cap open android",
+    "gradle:debug": "node scripts/gradle-build.js debug && node scripts/verify-apk.js debug",
+    "gradle:release": "node scripts/gradle-build.js release && node scripts/verify-apk.js release",
+    "build:debug": "npm run bundle && npm run cap:sync && npm run gradle:debug",
+    "build:release": "npm run bundle && npm run cap:sync && npm run gradle:release"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.1.0",
+    "@capacitor/core": "^6.1.0",
+    "@capacitor/filesystem": "^6.0.0",
+    "@capacitor/share": "^6.0.0",
+    "@capacitor/splash-screen": "^6.0.0",
+    "rpg-char-controller": "file:..",
+    "nodejs-mobile-cordova": "^0.4.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0",
+    "@capacitor/cli": "^6.1.0",
+    "typescript": "^6.0.3"
+  }
+}

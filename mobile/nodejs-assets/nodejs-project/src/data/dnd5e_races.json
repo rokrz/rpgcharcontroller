@@ -1,0 +1,290 @@
+[
+  {
+    "index": "aasimar",
+    "name": "Aasimar",
+    "source": "VGTM",
+    "type": "race"
+  },
+  {
+    "index": "dwarf",
+    "name": "Anão",
+    "source": "PHB",
+    "type": "race"
+  },
+  {
+    "index": "hill-dwarf",
+    "name": "Anão da Colina",
+    "source": "PHB",
+    "type": "subrace"
+  },
+  {
+    "index": "mountain-dwarf",
+    "name": "Anão da Montanha",
+    "source": "PHB",
+    "type": "subrace"
+  },
+  {
+    "index": "dragonborn",
+    "name": "Draconato",
+    "source": "PHB",
+    "type": "race"
+  },
+  {
+    "index": "blue-dragonborn",
+    "name": "Draconato Azul",
+    "source": "PHB",
+    "type": "subrace"
+  },
+  {
+    "index": "white-dragonborn",
+    "name": "Draconato Branco",
+    "source": "PHB",
+    "type": "subrace"
+  },
+  {
+    "index": "brass-dragonborn",
+    "name": "Draconato Bronze",
+    "source": "PHB",
+    "type": "subrace"
+  },
+  {
+    "index": "copper-dragonborn",
+    "name": "Draconato Cobre",
+    "source": "PHB",
+    "type": "subrace"
+  },
+  {
+    "index": "gold-dragonborn",
+    "name": "Draconato Dourado",
+    "source": "PHB",
+    "type": "subrace"
+  },
+  {
+    "index": "bronze-dragonborn",
+    "name": "Draconato Latão",
+    "source": "PHB",
+    "type": "subrace"
+  },
+  {
+    "index": "black-dragonborn",
+    "name": "Draconato Negro",
+    "source": "PHB",
+    "type": "subrace"
+  },
+  {
+    "index": "silver-dragonborn",
+    "name": "Draconato Prateado",
+    "source": "PHB",
+    "type": "subrace"
+  },
+  {
+    "index": "green-dragonborn",
+    "name": "Draconato Verde",
+    "source": "PHB",
+    "type": "subrace"
+  },
+  {
+    "index": "red-dragonborn",
+    "name": "Draconato Vermelho",
+    "source": "PHB",
+    "type": "subrace"
+  },
+  {
+    "index": "dark-elf",
+    "name": "Drow",
+    "source": "PHB",
+    "type": "subrace"
+  },
+  {
+    "index": "eladrin",
+    "name": "Eladrin",
+    "source": "MTF",
+    "type": "subrace"
+  },
+  {
+    "index": "elf",
+    "name": "Elfo",
+    "source": "PHB",
+    "type": "race"
+  },
+  {
+    "index": "high-elf",
+    "name": "Elfo Alto",
+    "source": "PHB",
+    "type": "subrace"
+  },
+  {
+    "index": "wood-elf",
+    "name": "Elfo da Floresta",
+    "source": "PHB",
+    "type": "subrace"
+  },
+  {
+    "index": "sea-elf",
+    "name": "Elfo do Mar",
+    "source": "MTF",
+    "type": "subrace"
+  },
+  {
+    "index": "fairy",
+    "name": "Fada",
+    "source": "WBtW",
+    "type": "race"
+  },
+  {
+    "index": "firbolg",
+    "name": "Firbolg",
+    "source": "VGTM",
+    "type": "race"
+  },
+  {
+    "index": "warforged",
+    "name": "Forjado de Guerra",
+    "source": "ERLW",
+    "type": "race"
+  },
+  {
+    "index": "githyanki",
+    "name": "Githyanki",
+    "source": "MTF",
+    "type": "race"
+  },
+  {
+    "index": "githzerai",
+    "name": "Githzerai",
+    "source": "MTF",
+    "type": "race"
+  },
+  {
+    "index": "gnome",
+    "name": "Gnomo",
+    "source": "PHB",
+    "type": "race"
+  },
+  {
+    "index": "forest-gnome",
+    "name": "Gnomo da Floresta",
+    "source": "PHB",
+    "type": "subrace"
+  },
+  {
+    "index": "rock-gnome",
+    "name": "Gnomo das Rochas",
+    "source": "PHB",
+    "type": "subrace"
+  },
+  {
+    "index": "goliath",
+    "name": "Goliath",
+    "source": "VGTM",
+    "type": "race"
+  },
+  {
+    "index": "halfling",
+    "name": "Halfling",
+    "source": "PHB",
+    "type": "race"
+  },
+  {
+    "index": "lightfoot-halfling",
+    "name": "Halfling Pé-Leve",
+    "source": "PHB",
+    "type": "subrace"
+  },
+  {
+    "index": "stout-halfling",
+    "name": "Halfling Robusto",
+    "source": "PHB",
+    "type": "subrace"
+  },
+  {
+    "index": "harengon",
+    "name": "Harengon",
+    "source": "WBtW",
+    "type": "race"
+  },
+  {
+    "index": "human",
+    "name": "Humano",
+    "source": "PHB",
+    "type": "race"
+  },
+  {
+    "index": "kalashtar",
+    "name": "Kalashtar",
+    "source": "ERLW",
+    "type": "race"
+  },
+  {
+    "index": "kenku",
+    "name": "Kenku",
+    "source": "VGTM",
+    "type": "race"
+  },
+  {
+    "index": "lizardfolk",
+    "name": "Lagartixa",
+    "source": "VGTM",
+    "type": "race"
+  },
+  {
+    "index": "custom-lineage",
+    "name": "Linhagem Customizada",
+    "source": "TCE",
+    "type": "race"
+  },
+  {
+    "index": "shifter",
+    "name": "Lúpino",
+    "source": "ERLW",
+    "type": "race"
+  },
+  {
+    "index": "half-elf",
+    "name": "Meio-Elfo",
+    "source": "PHB",
+    "type": "race"
+  },
+  {
+    "index": "half-orc",
+    "name": "Meio-Orc",
+    "source": "PHB",
+    "type": "race"
+  },
+  {
+    "index": "changeling",
+    "name": "Mutante",
+    "source": "ERLW",
+    "type": "race"
+  },
+  {
+    "index": "shadar-kai",
+    "name": "Shadar-kai",
+    "source": "MTF",
+    "type": "subrace"
+  },
+  {
+    "index": "tabaxi",
+    "name": "Tabaxi",
+    "source": "VGTM",
+    "type": "race"
+  },
+  {
+    "index": "tiefling",
+    "name": "Tiefling",
+    "source": "PHB",
+    "type": "race"
+  },
+  {
+    "index": "triton",
+    "name": "Tritão",
+    "source": "VGTM",
+    "type": "race"
+  },
+  {
+    "index": "yuan-ti-pureblood",
+    "name": "Yuan-ti Puro-Sangue",
+    "source": "VGTM",
+    "type": "race"
+  }
+]

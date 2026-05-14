@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Trash2, ChevronDown, ChevronUp, Check } from "lucide-react";
 import Card from "../../components/ui/Card.jsx";
 import Button from "../../components/ui/Button.jsx";
 import Input from "../../components/ui/Input.jsx";
@@ -48,9 +48,47 @@ function ComboField({ label, value, onChange, options }) {
     </div>
   );
 }
-// Alias para compatibilidade com a prop `classes` usada antes
 function ComboClass({ value, onChange, classes }) {
   return <ComboField label="Classe" value={value} onChange={onChange} options={classes} />;
+}
+
+function SkillChoicePanel({ title, choose, options, appliedSkills, onApplySkill }) {
+  const selected = options.filter((o) => appliedSkills?.[o.key]);
+  const maxReached = selected.length >= choose;
+  return (
+    <div className="border border-gold/20 bg-parchment-deep/40 rounded-sheet p-3 space-y-2">
+      <div className="flex items-center justify-between">
+        <p className="font-display text-[9px] uppercase tracking-widest text-ink-faded">{title}</p>
+        <span className={`text-[9px] font-display tabular-nums ${maxReached ? "text-hp-healthy" : "text-ink-faded"}`}>
+          {selected.length}/{choose}
+        </span>
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        {options.map((sk) => {
+          const already = !!appliedSkills?.[sk.key];
+          const disabled = already || maxReached;
+          return (
+            <button
+              key={sk.key}
+              onClick={() => !disabled && onApplySkill(sk.key)}
+              disabled={disabled}
+              title={already ? "Já marcada" : maxReached ? "Limite atingido" : "Marcar perícia"}
+              className={`flex items-center gap-1 text-xs font-serif px-2 py-0.5 rounded-sheet border transition ${
+                already
+                  ? "border-hp-healthy/40 text-hp-healthy cursor-default"
+                  : maxReached
+                  ? "border-parchment-edge text-ink-faded cursor-not-allowed opacity-40"
+                  : "border-parchment-edge text-ink hover:border-burgundy hover:text-burgundy"
+              }`}
+            >
+              {already ? <Check size={10} /> : <Plus size={10} />}
+              {sk.name}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
 const TABS = ["Identidade", "Atributos", "Combate", "Ataques", "Magias", "Equipamento", "Traços", "Personalidade"];
@@ -63,14 +101,17 @@ export default function Dnd5eSheet({ data, onUpdate }) {
   const [browser, setBrowser] = useState(null);
   const [subclasses, setSubclasses] = useState([]);
   const [races, setRaces] = useState(DND5E_RACES);
-  const [raceDetails, setRaceDetails] = useState(null);
-  const [bgDetails, setBgDetails] = useState(null);
+  const [raceStatus, setRaceStatus] = useState({ loading: false, data: null });
+  const [bgStatus, setBgStatus] = useState({ loading: false, data: null });
+  const [classStatus, setClassStatus] = useState({ loading: false, data: null });
   const [mcSubclasses, setMcSubclasses] = useState({});
 
   const classSlug = findClassSlug(data.class);
   const bgSlug = findBackgroundSlug(data.background);
   const raceLow = (data.race || "").toLowerCase().trim();
-  const raceSlug = races.find((r) => r.label.toLowerCase() === raceLow || r.slug === raceLow)?.slug ?? null;
+  const raceSlug = races.find((r) => r.label.toLowerCase() === raceLow || r.slug === raceLow)?.slug
+    ?? DND5E_RACES.find((r) => r.label.toLowerCase() === raceLow || r.slug === raceLow)?.slug
+    ?? null;
   const subclassSlug = subclasses.find(
     (s) => s.label.toLowerCase() === (data.subclass || "").toLowerCase()
   )?.slug;
@@ -92,13 +133,27 @@ export default function Dnd5eSheet({ data, onUpdate }) {
   }, [classSlug]);
 
   useEffect(() => {
-    if (!raceSlug) { setRaceDetails(null); return; }
-    api.fetchDetail("dnd5e", "racedetail", raceSlug).then(setRaceDetails).catch(() => setRaceDetails(null));
+    if (!classSlug) { setClassStatus({ loading: false, data: null }); return; }
+    setClassStatus({ loading: true, data: null });
+    api.fetchDetail("dnd5e", "classdetail", classSlug)
+      .then((d) => setClassStatus({ loading: false, data: d }))
+      .catch(() => setClassStatus({ loading: false, data: "error" }));
+  }, [classSlug]);
+
+  useEffect(() => {
+    if (!raceSlug) { setRaceStatus({ loading: false, data: null }); return; }
+    setRaceStatus({ loading: true, data: null });
+    api.fetchDetail("dnd5e", "racedetail", raceSlug)
+      .then((d) => setRaceStatus({ loading: false, data: d }))
+      .catch(() => setRaceStatus({ loading: false, data: "error" }));
   }, [raceSlug]);
 
   useEffect(() => {
-    if (!bgSlug) { setBgDetails(null); return; }
-    api.fetchDetail("dnd5e", "backgrounddetail", bgSlug).then(setBgDetails).catch(() => setBgDetails(null));
+    if (!bgSlug) { setBgStatus({ loading: false, data: null }); return; }
+    setBgStatus({ loading: true, data: null });
+    api.fetchDetail("dnd5e", "backgrounddetail", bgSlug)
+      .then((d) => setBgStatus({ loading: false, data: d }))
+      .catch(() => setBgStatus({ loading: false, data: "error" }));
   }, [bgSlug]);
 
   useEffect(() => {
@@ -272,6 +327,36 @@ export default function Dnd5eSheet({ data, onUpdate }) {
             </div>
           )}
 
+          {/* Escolhas de perícia da classe */}
+          {classStatus.loading && (
+            <p className="sm:col-span-2 text-[10px] text-ink-faded font-display uppercase tracking-widest">Carregando classe...</p>
+          )}
+          {classStatus.data === "error" && (
+            <p className="sm:col-span-2 text-[10px] text-burgundy font-display uppercase tracking-widest">Detalhes da classe indisponíveis.</p>
+          )}
+          {classStatus.data && classStatus.data !== "error" && (classStatus.data.proficiencyChoices || []).map((choice, i) => (
+            <div key={i} className="sm:col-span-2">
+              <SkillChoicePanel
+                title={`Perícias de ${data.class}`}
+                choose={choice.choose}
+                options={choice.from}
+                appliedSkills={data.skills}
+                onApplySkill={(key) => { const n = structuredClone(data); n.skills[key] = true; onUpdate(n); }}
+              />
+            </div>
+          ))}
+          {classStatus.data && classStatus.data !== "error" && (classStatus.data.savingThrows || []).length > 0 && (
+            <div className="sm:col-span-2">
+              <SkillChoicePanel
+                title={`Testes de Resistência de ${data.class}`}
+                choose={classStatus.data.savingThrows.length}
+                options={classStatus.data.savingThrows.map((key) => ({ key, name: ABILITY_PT[key] }))}
+                appliedSkills={data.savingThrows}
+                onApplySkill={(key) => { const n = structuredClone(data); n.savingThrows[key] = true; onUpdate(n); }}
+              />
+            </div>
+          )}
+
           {/* Habilidades da Subclasse */}
           {subclassSlug && (
             <div className="sm:col-span-2">
@@ -289,29 +374,59 @@ export default function Dnd5eSheet({ data, onUpdate }) {
           <Input label="XP" type="number" value={data.xp || 0} onChange={(e) => set("xp", Number(e.target.value))} />
           <ComboField label="Raça / Espécie" value={data.race || ""} onChange={(v) => set("race", v)} options={races} />
           <ComboField label="Antecedente" value={data.background || ""} onChange={(v) => set("background", v)} options={DND5E_BACKGROUNDS} />
-          {raceDetails && (
+          {raceStatus.loading && (
+            <p className="sm:col-span-2 text-[10px] text-ink-faded font-display uppercase tracking-widest">Carregando raça...</p>
+          )}
+          {raceStatus.data === "error" && (
+            <p className="sm:col-span-2 text-[10px] text-burgundy font-display uppercase tracking-widest">Detalhes da raça indisponíveis.</p>
+          )}
+          {raceStatus.data && raceStatus.data !== "error" && (
             <div className="sm:col-span-2">
               <TraitInfoPanel
-                details={raceDetails}
+                details={raceStatus.data}
                 type="race"
                 data={data}
                 onApplySkill={(key) => { const n = structuredClone(data); n.skills[key] = true; onUpdate(n); }}
                 onAppendLanguage={(lang) => { const n = structuredClone(data); n.languages = n.languages ? `${n.languages}, ${lang}` : lang; onUpdate(n); }}
                 onAppendProficiency={(prof) => { const n = structuredClone(data); n.otherProficiencies = n.otherProficiencies ? `${n.otherProficiencies}, ${prof}` : prof; onUpdate(n); }}
-                onAddTrait={(name) => addFeature({ name, source: raceDetails?.name || "" })}
+                onAddTrait={(name) => addFeature({ name, source: raceStatus.data?.name || "" })}
+                onApplyAbilityBonus={(key, bonus, sourceIndex) => {
+                  const n = structuredClone(data);
+                  n.abilities[key] = (n.abilities[key] || 10) + bonus;
+                  if (sourceIndex) {
+                    if (!n.appliedRaceBonuses) n.appliedRaceBonuses = {};
+                    n.appliedRaceBonuses[sourceIndex] = [...(n.appliedRaceBonuses[sourceIndex] || []), key];
+                  }
+                  onUpdate(n);
+                }}
               />
             </div>
           )}
-          {bgDetails && (
+          {bgStatus.loading && (
+            <p className="sm:col-span-2 text-[10px] text-ink-faded font-display uppercase tracking-widest">Carregando antecedente...</p>
+          )}
+          {bgStatus.data === "error" && (
+            <p className="sm:col-span-2 text-[10px] text-burgundy font-display uppercase tracking-widest">Detalhes do antecedente indisponíveis.</p>
+          )}
+          {bgStatus.data && bgStatus.data !== "error" && (
             <div className="sm:col-span-2">
               <TraitInfoPanel
-                details={bgDetails}
+                details={bgStatus.data}
                 type="background"
                 data={data}
                 onApplySkill={(key) => { const n = structuredClone(data); n.skills[key] = true; onUpdate(n); }}
                 onAppendLanguage={(lang) => { const n = structuredClone(data); n.languages = n.languages ? `${n.languages}, ${lang}` : lang; onUpdate(n); }}
                 onAppendProficiency={(prof) => { const n = structuredClone(data); n.otherProficiencies = n.otherProficiencies ? `${n.otherProficiencies}, ${prof}` : prof; onUpdate(n); }}
-                onAddTrait={(name) => addFeature({ name, source: bgDetails?.name || "" })}
+                onAddTrait={(name) => addFeature({ name, source: bgStatus.data?.name || "" })}
+                onApplyAbilityBonus={(key, bonus, sourceIndex) => {
+                  const n = structuredClone(data);
+                  n.abilities[key] = (n.abilities[key] || 10) + bonus;
+                  if (sourceIndex) {
+                    if (!n.appliedRaceBonuses) n.appliedRaceBonuses = {};
+                    n.appliedRaceBonuses[sourceIndex] = [...(n.appliedRaceBonuses[sourceIndex] || []), key];
+                  }
+                  onUpdate(n);
+                }}
               />
             </div>
           )}
@@ -435,7 +550,7 @@ export default function Dnd5eSheet({ data, onUpdate }) {
           <Card>
             <Card.Header><p className="font-display text-xs uppercase tracking-widest text-ink-muted">Pontos de Vida</p></Card.Header>
             <Card.Body className="space-y-3">
-              <HPBar current={data.hp?.current || 0} max={data.hp?.max || 0} />
+              <HPBar current={data.hp?.current || 0} max={data.hp?.max || 0} temp={data.hp?.temp || 0} />
               <div className="grid grid-cols-3 gap-3">
                 <Input label="Máximo" type="number" value={data.hp?.max || 0} onChange={(e) => { const n = structuredClone(data); n.hp.max = Number(e.target.value); onUpdate(n); }} />
                 <Input label="Atual" type="number" value={data.hp?.current || 0} onChange={(e) => { const n = structuredClone(data); n.hp.current = Number(e.target.value); onUpdate(n); }} />

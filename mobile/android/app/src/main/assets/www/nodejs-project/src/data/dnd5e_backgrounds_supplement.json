@@ -1,0 +1,184 @@
+{
+  "acolyte": {
+    "index": "acolyte",
+    "name": "Acólito",
+    "skillProficiencies": [
+      { "key": "insight", "name": "Intuição" },
+      { "key": "religion", "name": "Religião" }
+    ],
+    "otherProficiencies": [],
+    "languageOptions": 2,
+    "feature": {
+      "name": "Abrigo dos Fiéis",
+      "desc": "Como acólito, você recebe o respeito dos que partilham sua fé e pode realizar cerimônias religiosas. Você e seus companheiros podem esperar receber cura gratuita em templos de seus deuses, embora devam prover componentes necessários. Os que comungam de sua religião o apoiarão num estilo de vida modesto."
+    }
+  },
+  "charlatan": {
+    "index": "charlatan",
+    "name": "Charlatão",
+    "skillProficiencies": [
+      { "key": "deception", "name": "Enganação" },
+      { "key": "sleightOfHand", "name": "Prestidigitação" }
+    ],
+    "otherProficiencies": ["Kit de disfarce", "Kit de falsificação"],
+    "languageOptions": 0,
+    "feature": {
+      "name": "Identidade Falsa",
+      "desc": "Você criou uma segunda identidade que inclui documentação, estabelecimentos conhecidos e disfarces. Além disso, você pode forjar documentos, incluindo documentos oficiais e cartas pessoais, desde que tenha visto um exemplo do tipo de documento ou da caligrafia que está tentando copiar."
+    }
+  },
+  "criminal": {
+    "index": "criminal",
+    "name": "Criminal",
+    "skillProficiencies": [
+      { "key": "deception", "name": "Enganação" },
+      { "key": "stealth", "name": "Furtividade" }
+    ],
+    "otherProficiencies": ["Ferramentas de ladrão", "Um tipo de jogo à sua escolha"],
+    "languageOptions": 0,
+    "feature": {
+      "name": "Contato Criminal",
+      "desc": "Você tem um contato de confiança que age como seu agente de ligação com uma rede de outros criminosos. Você sabe como enviar e receber mensagens por meio de correios ocultos, tavernas específicas, mercadores e outras redes de transmissão de informações."
+    }
+  },
+  "entertainer": {
+    "index": "entertainer",
+    "name": "Artista",
+    "skillProficiencies": [
+      { "key": "acrobatics", "name": "Acrobacia" },
+      { "key": "performance", "name": "Performance" }
+    ],
+    "otherProficiencies": ["Kit de disfarce", "Um instrumento musical à sua escolha"],
+    "languageOptions": 0,
+    "feature": {
+      "name": "Pelo Favor Popular",
+      "desc": "Você pode sempre encontrar um lugar para se apresentar — em uma estalagem, taverna ou circo —, e ao fazê-lo você recebe alojamento e comida de qualidade modesta, bem como a boa vontade do público."
+    }
+  },
+  "folk-hero": {
+    "index": "folk-hero",
+    "name": "Herói do Povo",
+    "skillProficiencies": [
+      { "key": "animalHandling", "name": "Lidar c/ Animais" },
+      { "key": "survival", "name": "Sobrevivência" }
+    ],
+    "otherProficiencies": ["Ferramentas de artesão à sua escolha", "Veículos terrestres"],
+    "languageOptions": 0,
+    "feature": {
+      "name": "Hospitalidade Rústica",
+      "desc": "Já que você é originário do povo comum, pode se misturar com eles facilmente. Você pode encontrar um lugar para se esconder, descansar ou recuperar-se entre gente comum, a menos que demonstre ser uma ameaça. Eles te protegerão de quem busca te encontrar, embora não arrisquem suas vidas por você."
+    }
+  },
+  "guild-artisan": {
+    "index": "guild-artisan",
+    "name": "Artesão de Guilda",
+    "skillProficiencies": [
+      { "key": "insight", "name": "Intuição" },
+      { "key": "persuasion", "name": "Persuasão" }
+    ],
+    "otherProficiencies": ["Ferramentas de artesão à sua escolha"],
+    "languageOptions": 1,
+    "feature": {
+      "name": "Membro da Guilda",
+      "desc": "Como membro estabelecido e respeitado de uma guilda, você pode contar com certos privilégios. Seus companheiros membros fornecerão alojamento e comida se necessário. Muitas guildas também fornecem advogados que podem assistir membros em apuros legais."
+    }
+  },
+  "hermit": {
+    "index": "hermit",
+    "name": "Eremita",
+    "skillProficiencies": [
+      { "key": "medicine", "name": "Medicina" },
+      { "key": "religion", "name": "Religião" }
+    ],
+    "otherProficiencies": ["Kit de herbalismo"],
+    "languageOptions": 1,
+    "feature": {
+      "name": "Descoberta",
+      "desc": "O isolamento tranquilo de seu longo retiro deu a você acesso a uma poderosa descoberta. A exata natureza dessa revelação depende da natureza de seu retiro — pode ser uma grande verdade sobre o cosmos, os deuses, poderes poderosos ou forças do mal."
+    }
+  },
+  "noble": {
+    "index": "noble",
+    "name": "Nobre",
+    "skillProficiencies": [
+      { "key": "history", "name": "História" },
+      { "key": "persuasion", "name": "Persuasão" }
+    ],
+    "otherProficiencies": ["Um tipo de jogo à sua escolha"],
+    "languageOptions": 1,
+    "feature": {
+      "name": "Posição de Privilégio",
+      "desc": "Graças à sua posição nobre e à influência que ela carrega, as pessoas tendem a pensar o melhor de você. Você é bem-vindo em alta sociedade, e as pessoas assumem que você tem o direito de estar onde quer que esteja. A gente comum faz de tudo para acomodá-lo."
+    }
+  },
+  "outlander": {
+    "index": "outlander",
+    "name": "Forasteiro",
+    "skillProficiencies": [
+      { "key": "athletics", "name": "Atletismo" },
+      { "key": "survival", "name": "Sobrevivência" }
+    ],
+    "otherProficiencies": ["Um instrumento musical à sua escolha"],
+    "languageOptions": 1,
+    "feature": {
+      "name": "Andarilho",
+      "desc": "Não importa onde você esteja, você tem excelente memória para mapas e geografia, e sempre pode se lembrar do layout geral de terrenos e assentamentos ao redor. Além disso, você pode encontrar comida e água fresca para você e até cinco outras pessoas por dia."
+    }
+  },
+  "sage": {
+    "index": "sage",
+    "name": "Sábio",
+    "skillProficiencies": [
+      { "key": "arcana", "name": "Arcanismo" },
+      { "key": "history", "name": "História" }
+    ],
+    "otherProficiencies": [],
+    "languageOptions": 2,
+    "feature": {
+      "name": "Pesquisador",
+      "desc": "Quando você tenta aprender ou recordar um pedaço de lore, se não sabe a informação, frequentemente sabe onde e de quem pode obtê-la — geralmente de uma biblioteca, scriptorium, universidade ou de um sábio erudito."
+    }
+  },
+  "sailor": {
+    "index": "sailor",
+    "name": "Marinheiro",
+    "skillProficiencies": [
+      { "key": "athletics", "name": "Atletismo" },
+      { "key": "perception", "name": "Percepção" }
+    ],
+    "otherProficiencies": ["Ferramentas de navegador", "Veículos aquáticos"],
+    "languageOptions": 0,
+    "feature": {
+      "name": "Passagem no Navio",
+      "desc": "Quando precisar, você pode garantir passagem gratuita em um navio para você e seus companheiros. Você pode navegar em navios mercantes, militares ou de exploração. Como resposta, pode ser chamado para ajudar a tripulação durante a viagem."
+    }
+  },
+  "soldier": {
+    "index": "soldier",
+    "name": "Soldado",
+    "skillProficiencies": [
+      { "key": "athletics", "name": "Atletismo" },
+      { "key": "intimidation", "name": "Intimidação" }
+    ],
+    "otherProficiencies": ["Um tipo de jogo à sua escolha", "Veículos terrestres"],
+    "languageOptions": 0,
+    "feature": {
+      "name": "Patente Militar",
+      "desc": "Você tem uma patente de sua carreira como soldado. Soldados leais à sua antiga organização militar reconhecem sua autoridade. Você pode invocar sua patente para exercer influência sobre outros soldados e requisitar equipamento simples ou cavalos para uso temporário."
+    }
+  },
+  "urchin": {
+    "index": "urchin",
+    "name": "Pivete",
+    "skillProficiencies": [
+      { "key": "sleightOfHand", "name": "Prestidigitação" },
+      { "key": "stealth", "name": "Furtividade" }
+    ],
+    "otherProficiencies": ["Kit de disfarce", "Ferramentas de ladrão"],
+    "languageOptions": 0,
+    "feature": {
+      "name": "Segredos da Cidade",
+      "desc": "Você conhece os padrões e fluxo das cidades e pode encontrar passagens por elas. Quando não está em combate, você e companheiros que lidera podem viajar entre dois locais em uma cidade duas vezes mais rápido do que o ritmo normal permitiria."
+    }
+  }
+}

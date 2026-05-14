@@ -1,5 +1,41 @@
 const path = require("path");
 const fs = require("fs");
+
+// Node 12 (nodejs-mobile-cordova) nao tem fetch() nativo; Node 18+ tem.
+// Polyfill usando modulos nativos para evitar dependencia externa no bundle mobile.
+if (typeof fetch === "undefined") {
+  global.fetch = function (url, opts) {
+    opts = opts || {};
+    return new Promise(function (resolve, reject) {
+      var parsed = new URL(url);
+      var lib = parsed.protocol === "https:" ? require("https") : require("http");
+      var options = {
+        hostname: parsed.hostname,
+        path: parsed.pathname + (parsed.search || ""),
+        method: opts.method || "GET",
+        headers: opts.headers || {},
+        port: parsed.port || (parsed.protocol === "https:" ? 443 : 80),
+      };
+      var req = lib.request(options, function (res) {
+        var chunks = [];
+        res.on("data", function (chunk) { chunks.push(chunk); });
+        res.on("end", function () {
+          var body = Buffer.concat(chunks).toString("utf8");
+          resolve({
+            ok: res.statusCode >= 200 && res.statusCode < 300,
+            status: res.statusCode,
+            json: function () { return Promise.resolve(JSON.parse(body)); },
+            text: function () { return Promise.resolve(body); },
+          });
+        });
+      });
+      req.on("error", reject);
+      if (opts.body) req.write(opts.body);
+      req.end();
+    });
+  };
+}
+
 const DND5E_BASE = "https://www.dnd5eapi.co/api/2014";
 const LOCAL_SUBCLASSES = require(path.join(__dirname, "../data/dnd5e_subclasses.json"));
 const RACES_PATH = path.join(__dirname, "../data/dnd5e_races.json");
@@ -13,6 +49,56 @@ const RACE_SUPPLEMENT_PATH = path.join(__dirname, "../data/dnd5e_race_supplement
 const RACE_SUPPLEMENT = fs.existsSync(RACE_SUPPLEMENT_PATH)
   ? JSON.parse(fs.readFileSync(RACE_SUPPLEMENT_PATH, "utf8"))
   : {};
+
+const BG_SUPPLEMENT_PATH = path.join(__dirname, "../data/dnd5e_backgrounds_supplement.json");
+const BG_SUPPLEMENT = fs.existsSync(BG_SUPPLEMENT_PATH)
+  ? JSON.parse(fs.readFileSync(BG_SUPPLEMENT_PATH, "utf8"))
+  : {};
+
+const ABILITY_NAME_MAP = {
+  str: "Strength", dex: "Dexterity", con: "Constitution",
+  int: "Intelligence", wis: "Wisdom", cha: "Charisma",
+};
+
+const LANGUAGE_PT = {
+  "Common": "Comum",
+  "Dwarvish": "Anão",
+  "Elvish": "Élfico",
+  "Giant": "Gigante",
+  "Gnomish": "Gnômico",
+  "Goblin": "Goblin",
+  "Halfling": "Halfling",
+  "Orc": "Orc",
+  "Abyssal": "Abissal",
+  "Celestial": "Celestial",
+  "Draconic": "Dracônico",
+  "Deep Speech": "Fala Profunda",
+  "Infernal": "Infernal",
+  "Primordial": "Primordial",
+  "Sylvan": "Silvano",
+  "Undercommon": "Subcomum",
+};
+
+const SKILL_NAME_PT = {
+  "Acrobatics": "Acrobacia",
+  "Animal Handling": "Lidar c/ Animais",
+  "Arcana": "Arcanismo",
+  "Athletics": "Atletismo",
+  "Deception": "Enganação",
+  "History": "História",
+  "Insight": "Intuição",
+  "Intimidation": "Intimidação",
+  "Investigation": "Investigação",
+  "Medicine": "Medicina",
+  "Nature": "Natureza",
+  "Perception": "Percepção",
+  "Performance": "Performance",
+  "Persuasion": "Persuasão",
+  "Religion": "Religião",
+  "Sleight of Hand": "Prestidigitação",
+  "Stealth": "Furtividade",
+  "Survival": "Sobrevivência",
+};
 
 const SRD_FEATURES_PATH = path.join(__dirname, "../data/dnd5e_classfeatures_srd.json");
 let SRD_FEATURES = null;
@@ -290,6 +376,7 @@ async function getSubclassFeatures(subclassSlug, maxLevel = 20) {
 }
 const raceCache = {};
 const bgCache = {};
+const classDetailCache = {};
 const classSpellListCache = {};
 
 const MAIN_RACES = new Set(["dragonborn","dwarf","elf","gnome","half-elf","half-orc","halfling","human","tiefling"]);
@@ -325,16 +412,19 @@ function normalizeTraitDetails(raw, isSubrace) {
     darkvision: raw.darkvision,
     size: raw.size,
     abilityBonuses: (raw.ability_bonuses || []).map((b) => ({
-      abilityName: b.ability_score?.name,
+      abilityName: ABILITY_NAME_MAP[b.ability_score?.index] || b.ability_score?.name,
       bonus: b.bonus,
     })),
     skillProficiencies: profs
       .filter((p) => p.index.startsWith("skill-"))
-      .map((p) => ({ key: apiSkillToKey(p.index), name: (p.name || "").replace("Skill: ", "") })),
+      .map((p) => {
+        const name = (p.name || "").replace("Skill: ", "");
+        return { key: apiSkillToKey(p.index), name: SKILL_NAME_PT[name] || name };
+      }),
     otherProficiencies: profs
       .filter((p) => !p.index.startsWith("skill-"))
       .map((p) => p.name),
-    languages: (raw.languages || []).map((l) => l.name),
+    languages: (raw.languages || []).map((l) => LANGUAGE_PT[l.name] || l.name),
     languageDesc: raw.language_desc,
     traits: (raw.racial_traits || raw.traits || []).map((t) => t.name),
   };
@@ -360,8 +450,35 @@ async function getRaceDetails(raceIndex) {
   return result;
 }
 
+async function getClassDetails(slug) {
+  if (classDetailCache[slug]) return classDetailCache[slug];
+  const res = await fetch(`${DND5E_BASE}/classes/${slug}`);
+  if (!res.ok) return null;
+  const raw = await res.json();
+  const proficiencyChoices = (raw.proficiency_choices || [])
+    .map((choice) => {
+      const options = (choice.from?.options || [])
+        .filter((o) => o.item?.index?.startsWith("skill-"))
+        .map((o) => ({ key: apiSkillToKey(o.item.index), name: (o.item.name || "").replace("Skill: ", "") }));
+      return options.length > 0 ? { choose: choice.choose, from: options } : null;
+    })
+    .filter(Boolean);
+  const savingThrows = (raw.saving_throws || []).map((st) =>
+    st.index.replace("saving-throw-", "")
+  );
+  const result = { index: slug, name: raw.name, proficiencyChoices, savingThrows };
+  classDetailCache[slug] = result;
+  return result;
+}
+
 async function getBackgroundDetails(bgIndex) {
   if (bgCache[bgIndex]) return bgCache[bgIndex];
+
+  if (BG_SUPPLEMENT[bgIndex]) {
+    bgCache[bgIndex] = BG_SUPPLEMENT[bgIndex];
+    return BG_SUPPLEMENT[bgIndex];
+  }
+
   const res = await fetch(`${DND5E_BASE}/backgrounds/${bgIndex}`);
   if (!res.ok) return null;
   const raw = await res.json();
@@ -371,7 +488,10 @@ async function getBackgroundDetails(bgIndex) {
     name: raw.name,
     skillProficiencies: profs
       .filter((p) => p.index.startsWith("skill-"))
-      .map((p) => ({ key: apiSkillToKey(p.index), name: (p.name || "").replace("Skill: ", "") })),
+      .map((p) => {
+        const name = (p.name || "").replace("Skill: ", "");
+        return { key: apiSkillToKey(p.index), name: SKILL_NAME_PT[name] || name };
+      }),
     otherProficiencies: profs
       .filter((p) => !p.index.startsWith("skill-"))
       .map((p) => p.name),
@@ -427,5 +547,6 @@ module.exports = {
   getSubclassFeatures,
   getRaceDetails,
   getBackgroundDetails,
+  getClassDetails,
   searchClassSpells,
 };
