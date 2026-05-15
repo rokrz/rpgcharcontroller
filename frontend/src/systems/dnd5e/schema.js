@@ -21,6 +21,23 @@ export const DND5E_SKILLS = [
   { key: "survival",      label: "Sobrevivência",     ability: "wis" },
 ];
 
+export function calcProficiencyBonus(level) {
+  return 2 + Math.floor((Math.max(1, level) - 1) / 4);
+}
+
+export function calcTotalLevel(data) {
+  const primary = Math.max(1, data.level || 1);
+  const mc = (data.multiclasses || []).reduce((sum, m) => sum + Math.max(1, m.level || 1), 0);
+  return primary + mc;
+}
+
+// Union of all source arrays → unique list for display
+export function joinSources(sourcesObj) {
+  return [...new Set(Object.values(sourcesObj || {}).flat())];
+}
+
+const EMPTY_SOURCES = () => ({ race: [], subrace: [], background: [], class: [], subclass: [], feat: [] });
+
 export function createDnd5eSheet(name = "Personagem") {
   const skills = {};
   DND5E_SKILLS.forEach((s) => { skills[s.key] = false; });
@@ -63,6 +80,7 @@ export function createDnd5eSheet(name = "Personagem") {
     currency: { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 },
 
     features: [],
+    feats: [],
 
     personality: { traits: "", ideals: "", bonds: "", flaws: "" },
     appearance: { age: "", height: "", weight: "", eyes: "", skin: "", hair: "", backstory: "" },
@@ -71,5 +89,7 @@ export function createDnd5eSheet(name = "Personagem") {
 
     multiclasses: [],
     appliedRaceBonuses: {},
+    proficiencySources: { race: [], subrace: [], background: [], class: [], subclass: [], feat: [] },
+    languageSources: { race: [], subrace: [], background: [], class: [], subclass: [], feat: [] },
   };
 }

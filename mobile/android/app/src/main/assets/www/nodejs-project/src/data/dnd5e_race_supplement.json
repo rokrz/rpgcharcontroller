@@ -1,4 +1,21 @@
 {
+  "human-variant": {
+    "index": "human-variant",
+    "name": "Humano Variante",
+    "speed": 30,
+    "darkvision": 0,
+    "size": "Medium",
+    "abilityBonuses": [],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": [],
+    "languageDesc": "Você pode falar, ler e escrever Comum e mais um idioma à sua escolha.",
+    "traits": [
+      "+1 em dois atributos à sua escolha",
+      "Uma proficiência em perícia à sua escolha",
+      "Um Talento (Feat) à sua escolha"
+    ]
+  },
   "aasimar": {
     "index": "aasimar",
     "name": "Aasimar",
@@ -164,6 +181,7 @@
   "eladrin": {
     "index": "eladrin",
     "name": "Eladrin",
+    "parentRace": "elf",
     "speed": 30,
     "darkvision": 60,
     "size": "Medium",
@@ -173,12 +191,13 @@
     "skillProficiencies": [],
     "otherProficiencies": [],
     "languages": [],
-    "languageDesc": "Sub-raça de Elfo. Herda todos os traços base de Elfo.",
+    "languageDesc": "",
     "traits": ["Passo Feérico (com efeito sazonal: Outono/Inverno/Primavera/Verão)"]
   },
   "sea-elf": {
     "index": "sea-elf",
     "name": "Elfo do Mar",
+    "parentRace": "elf",
     "speed": 30,
     "darkvision": 60,
     "size": "Medium",
@@ -188,12 +207,13 @@
     "skillProficiencies": [],
     "otherProficiencies": [],
     "languages": ["Aquan"],
-    "languageDesc": "Sub-raça de Elfo. Você também aprende Aquan.",
+    "languageDesc": "",
     "traits": ["Filho do Mar", "Amigo do Mar"]
   },
   "shadar-kai": {
     "index": "shadar-kai",
     "name": "Shadar-kai",
+    "parentRace": "elf",
     "speed": 30,
     "darkvision": 60,
     "size": "Medium",
@@ -203,7 +223,7 @@
     "skillProficiencies": [],
     "otherProficiencies": [],
     "languages": [],
-    "languageDesc": "Sub-raça de Elfo. Herda todos os traços base de Elfo.",
+    "languageDesc": "",
     "traits": ["Bênção da Rainha dos Corvos", "Resistência Necrótica"]
   },
   "custom-lineage": {
@@ -325,6 +345,7 @@
   "mountain-dwarf": {
     "index": "mountain-dwarf",
     "name": "Anão da Montanha",
+    "parentRace": "dwarf",
     "speed": 25,
     "darkvision": 60,
     "size": "Medium",
@@ -334,12 +355,13 @@
     "skillProficiencies": [],
     "otherProficiencies": ["Armadura Leve", "Armadura Média"],
     "languages": [],
-    "languageDesc": "Sub-raça de Anão. Herda todos os traços base de Anão.",
+    "languageDesc": "",
     "traits": ["Treinamento de Armadura Anã"]
   },
   "wood-elf": {
     "index": "wood-elf",
     "name": "Elfo das Florestas",
+    "parentRace": "elf",
     "speed": 35,
     "darkvision": 60,
     "size": "Medium",
@@ -349,12 +371,13 @@
     "skillProficiencies": [],
     "otherProficiencies": ["Espadas Longas", "Espadas Curtas", "Arcos Longos", "Arcos Curtos"],
     "languages": [],
-    "languageDesc": "Sub-raça de Elfo. Herda todos os traços base de Elfo.",
+    "languageDesc": "",
     "traits": ["Treinamento de Armas Élfico", "Pés Ligeiros", "Máscara da Natureza"]
   },
   "dark-elf": {
     "index": "dark-elf",
     "name": "Drow",
+    "parentRace": "elf",
     "speed": 30,
     "darkvision": 120,
     "size": "Medium",
@@ -364,12 +387,13 @@
     "skillProficiencies": [],
     "otherProficiencies": ["Floretes", "Espadas Curtas", "Bestas de Mão"],
     "languages": [],
-    "languageDesc": "Sub-raça de Elfo. Herda todos os traços base de Elfo.",
+    "languageDesc": "",
     "traits": ["Visão Noturna Superior", "Sensibilidade à Luz Solar", "Magia Drow", "Treinamento de Armas Drow"]
   },
   "forest-gnome": {
     "index": "forest-gnome",
     "name": "Gnomo das Florestas",
+    "parentRace": "gnome",
     "speed": 25,
     "darkvision": 60,
     "size": "Small",
@@ -379,12 +403,13 @@
     "skillProficiencies": [],
     "otherProficiencies": [],
     "languages": [],
-    "languageDesc": "Sub-raça de Gnomo. Herda todos os traços base de Gnomo.",
+    "languageDesc": "",
     "traits": ["Ilusionista Natural", "Falar com Pequenos Animais"]
   },
   "stout-halfling": {
     "index": "stout-halfling",
     "name": "Halfling Robusto",
+    "parentRace": "halfling",
     "speed": 25,
     "darkvision": 0,
     "size": "Small",
@@ -394,8 +419,24 @@
     "skillProficiencies": [],
     "otherProficiencies": [],
     "languages": [],
-    "languageDesc": "Sub-raça de Halfling. Herda todos os traços base de Halfling.",
+    "languageDesc": "",
     "traits": ["Resiliência Robusta"]
+  },
+  "lightfoot": {
+    "index": "lightfoot",
+    "name": "Halfling Pé-Leve",
+    "parentRace": "halfling",
+    "speed": 25,
+    "darkvision": 0,
+    "size": "Small",
+    "abilityBonuses": [
+      { "abilityName": "Charisma", "bonus": 1 }
+    ],
+    "skillProficiencies": [],
+    "otherProficiencies": [],
+    "languages": [],
+    "languageDesc": "",
+    "traits": ["Naturalmente Furtivo"]
   },
   "black-dragonborn": {
     "index": "black-dragonborn",
@@ -575,6 +616,7 @@
   "hill-dwarf": {
     "index": "hill-dwarf",
     "name": "Anão da Colina",
+    "parentRace": "dwarf",
     "speed": 25,
     "darkvision": 60,
     "size": "Medium",
@@ -582,9 +624,9 @@
       { "abilityName": "Wisdom", "bonus": 1 }
     ],
     "skillProficiencies": [],
-    "otherProficiencies": ["Machados de batalha", "Machados de mão", "Martelos leves", "Maças de guerra"],
-    "languages": ["Comum", "Anão"],
-    "languageDesc": "Sub-raça de Anão. Herda todos os traços base de Anão.",
+    "otherProficiencies": [],
+    "languages": [],
+    "languageDesc": "",
     "traits": ["Tenacidade Anã (+1 PV por nível)"]
   },
   "elf": {
@@ -607,6 +649,7 @@
   "high-elf": {
     "index": "high-elf",
     "name": "Alto Elfo",
+    "parentRace": "elf",
     "speed": 30,
     "darkvision": 60,
     "size": "Medium",
@@ -615,8 +658,8 @@
     ],
     "skillProficiencies": [],
     "otherProficiencies": ["Espadas Longas", "Espadas Curtas", "Arcos Longos", "Arcos Curtos"],
-    "languages": ["Comum", "Élfico"],
-    "languageDesc": "Sub-raça de Elfo. Você também aprende um idioma adicional à sua escolha.",
+    "languages": [],
+    "languageDesc": "",
     "languageOptions": 1,
     "traits": ["Treinamento de Armas Élfico", "Truque Arcano (1 truque de Mago)", "Idioma Adicional"]
   },
@@ -638,6 +681,7 @@
   "rock-gnome": {
     "index": "rock-gnome",
     "name": "Gnomo das Rochas",
+    "parentRace": "gnome",
     "speed": 25,
     "darkvision": 60,
     "size": "Small",
@@ -646,8 +690,8 @@
     ],
     "skillProficiencies": [],
     "otherProficiencies": ["Ferramentas de artesão à sua escolha"],
-    "languages": ["Comum", "Gnômico"],
-    "languageDesc": "Sub-raça de Gnomo. Herda todos os traços base de Gnomo.",
+    "languages": [],
+    "languageDesc": "",
     "traits": ["Conhecimento Artificial", "Engenhosidade (proficiência em Ferramentas de Artesão)"]
   },
   "half-elf": {
@@ -698,21 +742,6 @@
     "languages": ["Comum", "Halfling"],
     "languageDesc": "Você pode falar, ler e escrever Comum e Halfling.",
     "traits": ["Sortudo", "Corajoso", "Agilidade Halfling"]
-  },
-  "lightfoot": {
-    "index": "lightfoot",
-    "name": "Halfling Pés-Leves",
-    "speed": 25,
-    "darkvision": 0,
-    "size": "Small",
-    "abilityBonuses": [
-      { "abilityName": "Charisma", "bonus": 1 }
-    ],
-    "skillProficiencies": [],
-    "otherProficiencies": [],
-    "languages": ["Comum", "Halfling"],
-    "languageDesc": "Sub-raça de Halfling. Herda todos os traços base de Halfling.",
-    "traits": ["Naturalmente Furtivo"]
   },
   "human": {
     "index": "human",

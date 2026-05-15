@@ -55,6 +55,16 @@ const BG_SUPPLEMENT = fs.existsSync(BG_SUPPLEMENT_PATH)
   ? JSON.parse(fs.readFileSync(BG_SUPPLEMENT_PATH, "utf8"))
   : {};
 
+const FEATS_PATH = path.join(__dirname, "../data/dnd5e_feats.json");
+const ALL_FEATS = fs.existsSync(FEATS_PATH)
+  ? JSON.parse(fs.readFileSync(FEATS_PATH, "utf8"))
+  : [];
+
+const SPELL_LEVELS_PATH = path.join(__dirname, "../data/dnd5e_spell_levels.json");
+const SPELL_LEVELS = fs.existsSync(SPELL_LEVELS_PATH)
+  ? JSON.parse(fs.readFileSync(SPELL_LEVELS_PATH, "utf8"))
+  : {};
+
 const ABILITY_NAME_MAP = {
   str: "Strength", dex: "Dexterity", con: "Constitution",
   int: "Intelligence", wis: "Wisdom", cha: "Charisma",
@@ -158,6 +168,14 @@ function getSrdSubclassFeaturesByName(subclassName, maxLevel) {
     .map((f) => ({ ...f, type: "features" }));
 }
 
+function paginate(arr, page, limit) {
+  const total = arr.length;
+  const totalPages = Math.ceil(total / limit) || 1;
+  const p = Math.max(1, Math.min(Number(page) || 1, totalPages));
+  const start = (p - 1) * limit;
+  return { results: arr.slice(start, start + limit), total, page: p, totalPages };
+}
+
 const TYPE_MAP = {
   spells:    "spells",
   equipment: "equipment",
@@ -167,7 +185,7 @@ const TYPE_MAP = {
   races:     "races",
 };
 
-async function searchDnd5e(type, query) {
+async function searchDnd5e(type, query, page = 1, limit = 20) {
   const endpoint = TYPE_MAP[type] || type;
   const url = `${DND5E_BASE}/${endpoint}?name=${encodeURIComponent(query)}`;
 
@@ -175,25 +193,26 @@ async function searchDnd5e(type, query) {
   if (!res.ok) throw new Error(`D&D 5e API error: ${res.status}`);
   const json = await res.json();
 
-  const items = (json.results || []).slice(0, 20);
+  const allItems = json.results || [];
 
-  if (!query || items.length === 0) {
-    return items.map((item) => ({
-      index: item.index,
-      name: item.name,
-      url: item.url,
-    }));
+  if (!query || allItems.length === 0) {
+    const paged = paginate(allItems.map((item) => ({ index: item.index, name: item.name, url: item.url })), page, limit);
+    return paged;
   }
 
+  const { results: pageItems, total, totalPages } = paginate(allItems, page, limit);
+
   const detailed = await Promise.allSettled(
-    items.slice(0, 10).map((item) =>
+    pageItems.slice(0, limit).map((item) =>
       fetch(`https://www.dnd5eapi.co${item.url}`).then((r) => r.json())
     )
   );
 
-  return detailed
+  const results = detailed
     .filter((r) => r.status === "fulfilled")
     .map((r) => normalizeResult(r.value, type));
+
+  return { results, total, page: Number(page), totalPages };
 }
 
 function normalizeResult(raw, type) {
@@ -430,22 +449,88 @@ function normalizeTraitDetails(raw, isSubrace) {
   };
 }
 
+function mergeRaceDetails(parent, sub) {
+  function dedupeByKey(arr, key) {
+    const seen = new Set();
+    return arr.filter((item) => {
+      const k = item[key];
+      if (seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
+  }
+  function dedupeStrings(arr) {
+    const seen = new Set();
+    return arr.filter((s) => { const k = s.toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; });
+  }
+  return {
+    index: sub.index,
+    name: sub.name,
+    speed: sub.speed ?? parent.speed,
+    darkvision: sub.darkvision ?? parent.darkvision,
+    size: sub.size || parent.size,
+    abilityBonuses: dedupeByKey([...(parent.abilityBonuses || []), ...(sub.abilityBonuses || [])], "abilityName"),
+    skillProficiencies: dedupeByKey([...(parent.skillProficiencies || []), ...(sub.skillProficiencies || [])], "key"),
+    otherProficiencies: dedupeStrings([...(parent.otherProficiencies || []), ...(sub.otherProficiencies || [])]),
+    languages: dedupeStrings([...(parent.languages || []), ...(sub.languages || [])]),
+    languageDesc: [parent.languageDesc, sub.languageDesc].filter(Boolean).join(" "),
+    traits: dedupeStrings([...(parent.traits || []), ...(sub.traits || [])]),
+  };
+}
+
+async function fetchRaceBase(slug) {
+  if (RACE_SUPPLEMENT[slug]) return RACE_SUPPLEMENT[slug];
+  const res = await fetch(`${DND5E_BASE}/races/${slug}`);
+  if (!res.ok) return null;
+  const raw = await res.json();
+  return normalizeTraitDetails(raw, false);
+}
+
 async function getRaceDetails(raceIndex) {
   if (raceCache[raceIndex]) return raceCache[raceIndex];
 
   if (RACE_SUPPLEMENT[raceIndex]) {
-    raceCache[raceIndex] = RACE_SUPPLEMENT[raceIndex];
-    return RACE_SUPPLEMENT[raceIndex];
+    const entry = RACE_SUPPLEMENT[raceIndex];
+    if (entry.parentRace) {
+      const parent = await fetchRaceBase(entry.parentRace).catch(() => null);
+      if (parent) {
+        const merged = mergeRaceDetails(parent, entry);
+        raceCache[raceIndex] = merged;
+        return merged;
+      }
+    }
+    raceCache[raceIndex] = entry;
+    return entry;
   }
 
   const isSubrace = !MAIN_RACES.has(raceIndex);
-  const endpoint = isSubrace
-    ? `${DND5E_BASE}/subraces/${raceIndex}`
-    : `${DND5E_BASE}/races/${raceIndex}`;
-  const res = await fetch(endpoint);
+
+  if (isSubrace) {
+    const subRes = await fetch(`${DND5E_BASE}/subraces/${raceIndex}`);
+    if (!subRes.ok) return null;
+    const subRaw = await subRes.json();
+    const parentIndex = subRaw.race?.index;
+    const subNorm = normalizeTraitDetails(subRaw, true);
+
+    if (parentIndex) {
+      const parentRes = await fetch(`${DND5E_BASE}/races/${parentIndex}`);
+      if (parentRes.ok) {
+        const parentRaw = await parentRes.json();
+        const parentNorm = normalizeTraitDetails(parentRaw, false);
+        const result = mergeRaceDetails(parentNorm, subNorm);
+        raceCache[raceIndex] = result;
+        return result;
+      }
+    }
+
+    raceCache[raceIndex] = subNorm;
+    return subNorm;
+  }
+
+  const res = await fetch(`${DND5E_BASE}/races/${raceIndex}`);
   if (!res.ok) return null;
   const raw = await res.json();
-  const result = normalizeTraitDetails(raw, isSubrace);
+  const result = normalizeTraitDetails(raw, false);
   raceCache[raceIndex] = result;
   return result;
 }
@@ -504,39 +589,113 @@ async function getBackgroundDetails(bgIndex) {
   return result;
 }
 
-async function searchClassSpells(classSlug, query, maxSpellLevel) {
+async function searchClassSpells(classSlug, query, maxSpellLevel, page = 1, limit = 20) {
   const listKey = `spells-${classSlug}`;
   let refs;
   if (classSpellListCache[listKey]) {
     refs = classSpellListCache[listKey];
   } else {
     const res = await fetch(`${DND5E_BASE}/classes/${classSlug}/spells`);
-    if (!res.ok) return [];
+    if (!res.ok) return paginate([], page, limit);
     const json = await res.json();
     refs = json.results || [];
     classSpellListCache[listKey] = refs;
   }
 
   const q = (query || "").toLowerCase();
-  const filtered = q ? refs.filter((r) => r.name.toLowerCase().includes(q)) : refs;
-  const top = filtered.slice(0, 15);
+  let filtered = q ? refs.filter((r) => r.name.toLowerCase().includes(q)) : refs;
+
+  // Pre-filter by spell level using the static level map (avoids fetching details just to filter)
+  if (maxSpellLevel > 0) {
+    filtered = filtered.filter((r) => {
+      const lvl = SPELL_LEVELS[r.index];
+      return lvl === undefined || lvl <= maxSpellLevel;
+    });
+  }
+
+  const { results: pageRefs, total, totalPages } = paginate(filtered, page, limit);
 
   const details = await Promise.allSettled(
-    top.map((r) =>
+    pageRefs.map((r) =>
       fetch(`https://www.dnd5eapi.co${r.url}`)
         .then((res) => res.json())
         .then((raw) => normalizeResult(raw, "spells"))
     )
   );
 
-  let spells = details.filter((r) => r.status === "fulfilled").map((r) => r.value);
-  if (maxSpellLevel > 0) spells = spells.filter((s) => (s.level ?? 0) <= maxSpellLevel);
-  return spells;
+  const spells = details.filter((r) => r.status === "fulfilled").map((r) => r.value);
+  return { results: spells, total, page: Number(page), totalPages };
+}
+
+async function searchClassSpellsUnion(classSlugs, query, maxSpellLevel, page = 1, limit = 20) {
+  const allRefsArrays = await Promise.all(
+    classSlugs.map(async (classSlug) => {
+      const listKey = `spells-${classSlug}`;
+      if (classSpellListCache[listKey]) return classSpellListCache[listKey];
+      const res = await fetch(`${DND5E_BASE}/classes/${classSlug}/spells`);
+      if (!res.ok) return [];
+      const json = await res.json();
+      const refs = json.results || [];
+      classSpellListCache[listKey] = refs;
+      return refs;
+    })
+  );
+
+  const seen = new Set();
+  let merged = [];
+  for (const refs of allRefsArrays) {
+    for (const r of refs) {
+      if (!seen.has(r.index)) {
+        seen.add(r.index);
+        merged.push(r);
+      }
+    }
+  }
+
+  const q = (query || "").toLowerCase();
+  if (q) merged = merged.filter((r) => r.name.toLowerCase().includes(q));
+
+  if (maxSpellLevel > 0) {
+    merged = merged.filter((r) => {
+      const lvl = SPELL_LEVELS[r.index];
+      return lvl === undefined || lvl <= maxSpellLevel;
+    });
+  }
+
+  merged.sort((a, b) => {
+    const la = SPELL_LEVELS[a.index] ?? 99;
+    const lb = SPELL_LEVELS[b.index] ?? 99;
+    if (la !== lb) return la - lb;
+    return a.name.localeCompare(b.name);
+  });
+
+  const { results: pageRefs, total, totalPages } = paginate(merged, page, limit);
+
+  const details = await Promise.allSettled(
+    pageRefs.map((r) =>
+      fetch(`https://www.dnd5eapi.co${r.url}`)
+        .then((res) => res.json())
+        .then((raw) => normalizeResult(raw, "spells"))
+    )
+  );
+
+  const spells = details.filter((r) => r.status === "fulfilled").map((r) => r.value);
+  return { results: spells, total, page: Number(page), totalPages };
 }
 
 function getRaceList() {
   if (!fs.existsSync(RACES_PATH)) return [];
   return JSON.parse(fs.readFileSync(RACES_PATH, "utf8"));
+}
+
+function searchFeats(query) {
+  const q = (query || "").toLowerCase();
+  const filtered = q
+    ? ALL_FEATS.filter(
+        (f) => f.name.toLowerCase().includes(q) || (f.description || "").toLowerCase().includes(q)
+      )
+    : ALL_FEATS;
+  return filtered.map((f) => ({ index: f.index, name: f.name, type: "feats", prerequisite: f.prerequisite, description: f.description }));
 }
 
 module.exports = {
@@ -549,4 +708,7 @@ module.exports = {
   getBackgroundDetails,
   getClassDetails,
   searchClassSpells,
+  searchClassSpellsUnion,
+  searchFeats,
+  paginate,
 };

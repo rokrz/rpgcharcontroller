@@ -22,15 +22,18 @@ export const api = {
   deleteSheet: (id) => request(`/sheets/${id}`, { method: "DELETE" }),
 
   // Proxy de busca por sistema
-  search: (system, type, query) =>
-    request(`/proxy/${system}?type=${encodeURIComponent(type)}&search=${encodeURIComponent(query)}`),
+  search: (system, type, query, page = 1, limit = 20) =>
+    request(`/proxy/${system}?type=${encodeURIComponent(type)}&search=${encodeURIComponent(query)}&page=${page}&limit=${limit}`),
 
-  searchByClass: (system, type, className, level) =>
-    request(`/proxy/${system}?type=${encodeURIComponent(type)}&class=${encodeURIComponent(className)}&level=${level ?? 20}`),
+  searchByClass: (system, type, className, level, page = 1, limit = 20) =>
+    request(`/proxy/${system}?type=${encodeURIComponent(type)}&class=${encodeURIComponent(className)}&level=${level ?? 20}&page=${page}&limit=${limit}`),
 
   fetchDetail: (system, type, index) =>
     request(`/proxy/${system}?type=${encodeURIComponent(type)}&index=${encodeURIComponent(index)}`),
 
-  searchClassSpells: (classSlug, query, maxLevel) =>
-    request(`/proxy/dnd5e?type=classspells&class=${encodeURIComponent(classSlug)}&search=${encodeURIComponent(query || "")}&maxlevel=${maxLevel || 9}`),
+  searchClassSpells: (classSlug, query, maxLevel, page = 1, limit = 20) =>
+    request(`/proxy/dnd5e?type=classspells&class=${encodeURIComponent(classSlug)}&search=${encodeURIComponent(query || "")}&maxlevel=${maxLevel || 9}&page=${page}&limit=${limit}`),
+
+  searchMultiClassSpells: (classSlugs, query, maxLevel, page = 1, limit = 20) =>
+    request(`/proxy/dnd5e?type=classspellsunion&class=${encodeURIComponent(classSlugs.join(","))}&search=${encodeURIComponent(query || "")}&maxlevel=${maxLevel || 9}&page=${page}&limit=${limit}`),
 };

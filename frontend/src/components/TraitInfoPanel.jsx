@@ -26,11 +26,7 @@ const DND5E_LANGUAGES = [
   "Fala Profunda", "Infernal", "Primordial", "Silvano", "Subcomum",
 ];
 
-function alreadyIn(field, value) {
-  return (field || "").toLowerCase().includes(value.toLowerCase());
-}
-
-export default function TraitInfoPanel({ details, type, data, onApplySkill, onAppendLanguage, onAppendProficiency, onAddTrait, onApplyAbilityBonus }) {
+export default function TraitInfoPanel({ details, type, data, proficiencySources, languageSources, onApplySkill, onRemoveSkill, onAppendLanguage, onRemoveLanguage, onAppendProficiency, onRemoveProficiency, onAddTrait, onApplyAbilityBonus }) {
   const [open, setOpen] = useState(true);
   const [featureOpen, setFeatureOpen] = useState(false);
 
@@ -109,20 +105,20 @@ export default function TraitInfoPanel({ details, type, data, onApplySkill, onAp
               <p className="font-display text-[9px] uppercase tracking-widest text-ink-faded mb-1">Proficiência em Perícia</p>
               <div className="flex flex-wrap gap-1.5">
                 {details.skillProficiencies.map((sk) => {
-                  const already = data?.skills?.[sk.key] === true;
+                  const srcArr = (proficiencySources || {})[type] || data?.proficiencySources?.[type] || [];
+                  const applied = srcArr.includes(sk.key);
                   return (
                     <button
                       key={sk.key}
-                      onClick={() => !already && onApplySkill(sk.key)}
-                      disabled={already}
-                      title={already ? "Já marcada" : "Marcar perícia"}
+                      onClick={() => applied ? onRemoveSkill?.(sk.key) : onApplySkill?.(sk.key)}
+                      title={applied ? "Clique para remover" : "Marcar perícia"}
                       className={`flex items-center gap-1 text-xs font-serif px-2 py-0.5 rounded-sheet border transition ${
-                        already
-                          ? "border-hp-healthy/40 text-hp-healthy cursor-default"
+                        applied
+                          ? "border-hp-healthy/40 text-hp-healthy hover:border-burgundy hover:text-burgundy"
                           : "border-parchment-edge text-ink hover:border-burgundy hover:text-burgundy"
                       }`}
                     >
-                      {already ? <Check size={10} /> : <Plus size={10} />}
+                      {applied ? <Check size={10} /> : <Plus size={10} />}
                       {sk.name}
                     </button>
                   );
@@ -137,20 +133,20 @@ export default function TraitInfoPanel({ details, type, data, onApplySkill, onAp
               <p className="font-display text-[9px] uppercase tracking-widest text-ink-faded mb-1">Proficiências</p>
               <div className="flex flex-wrap gap-1.5">
                 {details.otherProficiencies.map((prof) => {
-                  const already = alreadyIn(data?.otherProficiencies, prof);
+                  const srcArr = (proficiencySources || {})[type] || data?.proficiencySources?.[type] || [];
+                  const applied = srcArr.includes(prof);
                   return (
                     <button
                       key={prof}
-                      onClick={() => !already && onAppendProficiency(prof)}
-                      disabled={already}
-                      title={already ? "Já adicionada" : "Adicionar"}
+                      onClick={() => applied ? onRemoveProficiency?.(prof) : onAppendProficiency?.(prof)}
+                      title={applied ? "Clique para remover" : "Adicionar"}
                       className={`flex items-center gap-1 text-xs font-serif px-2 py-0.5 rounded-sheet border transition ${
-                        already
-                          ? "border-hp-healthy/40 text-hp-healthy cursor-default"
+                        applied
+                          ? "border-hp-healthy/40 text-hp-healthy hover:border-burgundy hover:text-burgundy"
                           : "border-parchment-edge text-ink hover:border-burgundy hover:text-burgundy"
                       }`}
                     >
-                      {already ? <Check size={10} /> : <Plus size={10} />}
+                      {applied ? <Check size={10} /> : <Plus size={10} />}
                       {prof}
                     </button>
                   );
@@ -165,20 +161,20 @@ export default function TraitInfoPanel({ details, type, data, onApplySkill, onAp
               <p className="font-display text-[9px] uppercase tracking-widest text-ink-faded mb-1">Idiomas</p>
               <div className="flex flex-wrap gap-1.5">
                 {details.languages.map((lang) => {
-                  const already = alreadyIn(data?.languages, lang);
+                  const srcArr = (languageSources || {})[type] || data?.languageSources?.[type] || [];
+                  const applied = srcArr.includes(lang);
                   return (
                     <button
                       key={lang}
-                      onClick={() => !already && onAppendLanguage(lang)}
-                      disabled={already}
-                      title={already ? "Já no campo" : "Adicionar ao campo Idiomas"}
+                      onClick={() => applied ? onRemoveLanguage?.(lang) : onAppendLanguage?.(lang)}
+                      title={applied ? "Clique para remover" : "Adicionar ao campo Idiomas"}
                       className={`flex items-center gap-1 text-xs font-serif px-2 py-0.5 rounded-sheet border transition ${
-                        already
-                          ? "border-hp-healthy/40 text-hp-healthy cursor-default"
+                        applied
+                          ? "border-hp-healthy/40 text-hp-healthy hover:border-burgundy hover:text-burgundy"
                           : "border-parchment-edge text-ink hover:border-burgundy hover:text-burgundy"
                       }`}
                     >
-                      {already ? <Check size={10} /> : <Plus size={10} />}
+                      {applied ? <Check size={10} /> : <Plus size={10} />}
                       {lang}
                     </button>
                   );
@@ -198,7 +194,8 @@ export default function TraitInfoPanel({ details, type, data, onApplySkill, onAp
                   Escolha de Idiomas
                 </p>
                 {(() => {
-                  const picked = DND5E_LANGUAGES.filter((l) => alreadyIn(data?.languages, l)).length;
+                  const sourceLangs = (languageSources || {})[type] || data?.languageSources?.[type] || [];
+                  const picked = sourceLangs.length;
                   const max = details.languageOptions;
                   return (
                     <span className={`text-[9px] font-display tabular-nums ${picked >= max ? "text-hp-healthy" : "text-ink-faded"}`}>
@@ -209,25 +206,24 @@ export default function TraitInfoPanel({ details, type, data, onApplySkill, onAp
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {DND5E_LANGUAGES.map((lang) => {
-                  const already = alreadyIn(data?.languages, lang);
-                  const picked = DND5E_LANGUAGES.filter((l) => alreadyIn(data?.languages, l)).length;
-                  const maxReached = picked >= details.languageOptions;
-                  const disabled = already || maxReached;
+                  const sourceLangs = (languageSources || {})[type] || data?.languageSources?.[type] || [];
+                  const applied = sourceLangs.includes(lang);
+                  const maxReached = sourceLangs.length >= details.languageOptions;
+                  const canAdd = !applied && !maxReached;
                   return (
                     <button
                       key={lang}
-                      onClick={() => !disabled && onAppendLanguage(lang)}
-                      disabled={disabled}
-                      title={already ? "Já adicionado" : maxReached ? "Limite atingido" : "Adicionar idioma"}
+                      onClick={() => applied ? onRemoveLanguage?.(lang) : (canAdd && onAppendLanguage?.(lang))}
+                      title={applied ? "Clique para remover" : maxReached ? "Limite atingido" : "Adicionar idioma"}
                       className={`flex items-center gap-1 text-xs font-serif px-2 py-0.5 rounded-sheet border transition ${
-                        already
-                          ? "border-hp-healthy/40 text-hp-healthy cursor-default"
+                        applied
+                          ? "border-hp-healthy/40 text-hp-healthy hover:border-burgundy hover:text-burgundy"
                           : maxReached
                           ? "border-parchment-edge text-ink-faded cursor-not-allowed opacity-40"
                           : "border-parchment-edge text-ink hover:border-burgundy hover:text-burgundy"
                       }`}
                     >
-                      {already ? <Check size={10} /> : <Plus size={10} />}
+                      {applied ? <Check size={10} /> : <Plus size={10} />}
                       {lang}
                     </button>
                   );

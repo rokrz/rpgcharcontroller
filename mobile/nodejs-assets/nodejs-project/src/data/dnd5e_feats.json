@@ -1,0 +1,254 @@
+[
+  {
+    "index": "alert",
+    "name": "Alert",
+    "prerequisite": null,
+    "description": "Sempre alerta aos perigos: você não pode ser surpreendido enquanto estiver consciente; ganha +5 de bônus na iniciativa; criaturas ocultas não ganham vantagem nos ataques contra você."
+  },
+  {
+    "index": "athlete",
+    "name": "Athlete",
+    "prerequisite": null,
+    "description": "+1 em Força ou Destreza (máximo 20). Levantar-se de prostrado custa apenas 5 pés de movimento. Trepar sem gastar movimento adicional. Salto corrido requer apenas 5 pés de corrida."
+  },
+  {
+    "index": "actor",
+    "name": "Actor",
+    "prerequisite": null,
+    "description": "+1 em Carisma (máximo 20). Vantagem em Enganação e Performance ao se passar por outra pessoa. Pode imitar a voz de uma criatura após ouvi-la por pelo menos 1 minuto."
+  },
+  {
+    "index": "charger",
+    "name": "Charger",
+    "prerequisite": null,
+    "description": "Ao usar a ação Disparada, pode fazer um ataque corpo a corpo como ação bônus com +5 de dano, ou empurrar o alvo 10 pés se acertar."
+  },
+  {
+    "index": "crossbow-expert",
+    "name": "Crossbow Expert",
+    "prerequisite": null,
+    "description": "Ignora a propriedade Carregando de bestas. Não sofre desvantagem em ataques à distância com inimigos adjacentes. Pode atacar com besta manual de mão como ação bônus."
+  },
+  {
+    "index": "defensive-duelist",
+    "name": "Defensive Duelist",
+    "prerequisite": "Destreza 13 ou maior",
+    "description": "Ao ser acertado por um ataque corpo a corpo enquanto segura uma arma com a qual é proficiente, pode usar a reação para adicionar o bônus de proficiência à CA contra aquele ataque."
+  },
+  {
+    "index": "dual-wielder",
+    "name": "Dual Wielder",
+    "prerequisite": null,
+    "description": "+1 de CA ao empunhar armas de mão em ambas as mãos. Pode lutar com duas armas mesmo que não sejam leves. Pode sacar ou guardar duas armas de uma vez."
+  },
+  {
+    "index": "dungeon-delver",
+    "name": "Dungeon Delver",
+    "prerequisite": null,
+    "description": "Vantagem em testes de Percepção e Investigação para detectar passagens secretas. Vantagem em testes para detectar e desarmar armadilhas. Resistência a dano de armadilhas. Pode se mover em ritmo rápido sem penalidade na Percepção passiva."
+  },
+  {
+    "index": "durable",
+    "name": "Durable",
+    "prerequisite": null,
+    "description": "+1 em Constituição (máximo 20). Ao gastar Dados de Vida para recuperar PV durante descanso curto, o mínimo de PV recuperado é 2 vezes o modificador de Constituição."
+  },
+  {
+    "index": "elemental-adept",
+    "name": "Elemental Adept",
+    "prerequisite": "Capacidade de lançar ao menos uma magia",
+    "description": "Escolha ácido, frio, fogo, relâmpago ou trovão. Magias suas ignoram resistência ao tipo escolhido. Ao rolar dano desse tipo, trate 1s como 2s. Pode ser escolhido mais de uma vez, para tipos diferentes."
+  },
+  {
+    "index": "grappler",
+    "name": "Grappler",
+    "prerequisite": "Força 13 ou maior",
+    "description": "Vantagem em ataques contra criaturas que você esteja agarrando. Pode usar sua ação para imobilizar (restrained) uma criatura que está agarrando; você também fica imobilizado até que o agarrão termine."
+  },
+  {
+    "index": "great-weapon-master",
+    "name": "Great Weapon Master",
+    "prerequisite": null,
+    "description": "Ao acertar um crítico ou reduzir uma criatura a 0 PV com arma corpo a corpo, pode fazer um ataque corpo a corpo extra como ação bônus. Antes de fazer um ataque com arma pesada, pode aceitar -5 no ataque para +10 no dano."
+  },
+  {
+    "index": "healer",
+    "name": "Healer",
+    "prerequisite": null,
+    "description": "Ao usar kit de cura para estabilizar, a criatura recupera 1 PV. Pode usar ação e kit de cura para restaurar 1d6 + 4 + nível de dado de vida do alvo em PV, uma vez por descanso curto ou longo por criatura."
+  },
+  {
+    "index": "heavily-armored",
+    "name": "Heavily Armored",
+    "prerequisite": "Proficiência com armadura média",
+    "description": "+1 em Força (máximo 20). Proficiência com armaduras pesadas."
+  },
+  {
+    "index": "heavy-armor-master",
+    "name": "Heavy Armor Master",
+    "prerequisite": "Proficiência com armadura pesada",
+    "description": "+1 em Força (máximo 20). Enquanto vestindo armadura pesada, dano de corte, perfuração e impacto de ataques não-mágicos é reduzido em 3."
+  },
+  {
+    "index": "inspiring-leader",
+    "name": "Inspiring Leader",
+    "prerequisite": "Carisma 13 ou maior",
+    "description": "Após um descanso curto ou longo, pode fazer um discurso de 10 minutos para até 6 aliados. Cada um ganha PV temporários iguais ao seu nível + modificador de Carisma."
+  },
+  {
+    "index": "keen-mind",
+    "name": "Keen Mind",
+    "prerequisite": null,
+    "description": "+1 em Inteligência (máximo 20). Sempre sabe qual direção é o norte. Sempre sabe quantas horas faltam para o próximo nascer do sol. Lembra perfeitamente tudo que viu ou ouviu no último mês."
+  },
+  {
+    "index": "lightly-armored",
+    "name": "Lightly Armored",
+    "prerequisite": null,
+    "description": "+1 em Força ou Destreza (máximo 20). Proficiência com armaduras leves."
+  },
+  {
+    "index": "linguist",
+    "name": "Linguist",
+    "prerequisite": null,
+    "description": "+1 em Inteligência (máximo 20). Aprende 3 idiomas à escolha. Pode criar cifras e decifrar escritas em idiomas que conhece."
+  },
+  {
+    "index": "lucky",
+    "name": "Lucky",
+    "prerequisite": null,
+    "description": "3 pontos de sorte por descanso longo. Pode gastar um ponto para rolar um d20 adicional em ataque, teste de habilidade ou TR — escolhendo qual usar. Pode usar quando um inimigo rola ataque contra você, aplicando na jogada deles."
+  },
+  {
+    "index": "mage-slayer",
+    "name": "Mage Slayer",
+    "prerequisite": null,
+    "description": "Quando uma criatura dentro do seu alcance conjura uma magia, pode usar a reação para fazer um ataque corpo a corpo. Criaturas golpeadas por você têm desvantagem no TR de Concentração. Vantagem em TRs contra magias de criaturas adjacentes."
+  },
+  {
+    "index": "magic-initiate",
+    "name": "Magic Initiate",
+    "prerequisite": null,
+    "description": "Escolha Bardo, Clérigo, Druida, Feiticeiro, Bruxo ou Mago. Aprende 2 truques e 1 magia de 1º nível desta lista. Pode lançar a magia de 1º nível uma vez por descanso longo sem gastar slot."
+  },
+  {
+    "index": "martial-adept",
+    "name": "Martial Adept",
+    "prerequisite": null,
+    "description": "Aprende 2 manobras de Battle Master. Ganha 1 Dado de Superioridade d6 (adiciona ao pool se já tiver). Os dados se recuperam em descanso curto ou longo."
+  },
+  {
+    "index": "medium-armor-master",
+    "name": "Medium Armor Master",
+    "prerequisite": "Proficiência com armadura média",
+    "description": "Não sofre desvantagem em Furtividade ao usar armadura média. Bônus máximo de Destreza para CA em armadura média aumenta para +3."
+  },
+  {
+    "index": "mobile",
+    "name": "Mobile",
+    "prerequisite": null,
+    "description": "+10 pés de velocidade. Ao usar Disparada, terreno difícil não custa movimento extra. Ao atacar uma criatura (mesmo que erre), ela não provoca ataques de oportunidade até o final do turno."
+  },
+  {
+    "index": "moderately-armored",
+    "name": "Moderately Armored",
+    "prerequisite": "Proficiência com armadura leve",
+    "description": "+1 em Força ou Destreza (máximo 20). Proficiência com armaduras médias e escudos."
+  },
+  {
+    "index": "mounted-combatant",
+    "name": "Mounted Combatant",
+    "prerequisite": null,
+    "description": "Vantagem em ataques corpo a corpo contra criaturas desmontadas menores que sua montaria. Pode redirecionar ataques contra a montaria para você. A montaria rola metade do dano em TRs de Destreza bem-sucedidos."
+  },
+  {
+    "index": "observant",
+    "name": "Observant",
+    "prerequisite": null,
+    "description": "+1 em Inteligência ou Sabedoria (máximo 20). Pode ler lábios se entender o idioma. +5 em Percepção passiva e Investigação passiva."
+  },
+  {
+    "index": "polearm-master",
+    "name": "Polearm Master",
+    "prerequisite": null,
+    "description": "Ao atacar com alabarda, glaive, lança-longa ou bastão, pode usar ação bônus para atacar com a coronha (1d4 impacto). Criaturas que entram em seu alcance de arma provocam ataque de oportunidade."
+  },
+  {
+    "index": "resilient",
+    "name": "Resilient",
+    "prerequisite": null,
+    "description": "+1 em um atributo à escolha (máximo 20). Proficiência em TRs com esse atributo."
+  },
+  {
+    "index": "ritual-caster",
+    "name": "Ritual Caster",
+    "prerequisite": "Inteligência ou Sabedoria 13 ou maior",
+    "description": "Adquire um grimório ritual com 2 magias de 1º nível com tag ritual de uma classe escolhida. Pode copiar novas magias rituais encontradas. Pode lançar qualquer magia no grimório como ritual."
+  },
+  {
+    "index": "savage-attacker",
+    "name": "Savage Attacker",
+    "prerequisite": null,
+    "description": "Uma vez por turno, ao rolar dano em ataque corpo a corpo, pode rolar os dados de dano duas vezes e usar o resultado maior."
+  },
+  {
+    "index": "sentinel",
+    "name": "Sentinel",
+    "prerequisite": null,
+    "description": "Acertos em ataques de oportunidade reduzem a velocidade do alvo a 0 nesse turno. Criaturas provocam ataque de oportunidade mesmo ao usar a ação Recuar. Quando uma criatura ataca um aliado adjacente a você, pode usar a reação para atacá-la."
+  },
+  {
+    "index": "sharpshooter",
+    "name": "Sharpshooter",
+    "prerequisite": null,
+    "description": "Ataques à distância não têm desvantagem no alcance longo. Ataques à distância ignoram cobertura semi e três-quartos. Antes de atacar, pode aceitar -5 no ataque para +10 no dano."
+  },
+  {
+    "index": "shield-master",
+    "name": "Shield Master",
+    "prerequisite": null,
+    "description": "Se atacar como ação, pode empurrar uma criatura como ação bônus. Adiciona bônus de CA do escudo em TRs de Destreza contra efeitos que afetem apenas você. Em TR de Destreza bem-sucedido, não sofre dano (normalmente metade)."
+  },
+  {
+    "index": "skilled",
+    "name": "Skilled",
+    "prerequisite": null,
+    "description": "Proficiência em três perícias ou ferramentas à sua escolha."
+  },
+  {
+    "index": "skulker",
+    "name": "Skulker",
+    "prerequisite": "Destreza 13 ou maior",
+    "description": "Pode se esconder quando apenas levemente obscurecido. Errar um ataque à distância não revela sua posição. Sem desvantagem em Percepção em penumbra."
+  },
+  {
+    "index": "spell-sniper",
+    "name": "Spell Sniper",
+    "prerequisite": "Capacidade de lançar ao menos uma magia",
+    "description": "Dobra o alcance de magias que exigem jogada de ataque. Ataques de magia ignoram cobertura semi e três-quartos. Aprende um truque de ataque de uma lista de classe."
+  },
+  {
+    "index": "tavern-brawler",
+    "name": "Tavern Brawler",
+    "prerequisite": null,
+    "description": "+1 em Força ou Constituição (máximo 20). Proficiência com armas improvisadas e ataques desarmados. Ataques desarmados causam 1d4 + modificador de Força. Ao acertar com ataque desarmado ou improviso, pode tentar agarrar como ação bônus."
+  },
+  {
+    "index": "tough",
+    "name": "Tough",
+    "prerequisite": null,
+    "description": "O máximo de PV aumenta em 2 por nível (incluindo níveis anteriores e futuros)."
+  },
+  {
+    "index": "war-caster",
+    "name": "War Caster",
+    "prerequisite": "Capacidade de lançar ao menos uma magia",
+    "description": "Vantagem em TRs de Constituição para manter Concentração. Pode realizar componentes somáticos com as mãos ocupando escudo ou armas. Pode lançar uma magia com alvo único como ataque de oportunidade."
+  },
+  {
+    "index": "weapon-master",
+    "name": "Weapon Master",
+    "prerequisite": null,
+    "description": "+1 em Força ou Destreza (máximo 20). Proficiência com 4 armas à sua escolha."
+  }
+]

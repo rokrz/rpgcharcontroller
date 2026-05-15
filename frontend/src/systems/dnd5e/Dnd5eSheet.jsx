@@ -9,34 +9,40 @@ import BrowserPanel from "../../components/browsers/BrowserPanel.jsx";
 import ClassSuggestions from "../../components/ClassSuggestions.jsx";
 import TraitInfoPanel from "../../components/TraitInfoPanel.jsx";
 import { dnd5eApi } from "./api.js";
-import { DND5E_ABILITIES, DND5E_SKILLS } from "./schema.js";
+import { DND5E_ABILITIES, DND5E_SKILLS, calcProficiencyBonus, calcTotalLevel, joinSources } from "./schema.js";
+import { getMaxSpellLevel, isCaster } from "./spellProgression.js";
 import { DND5E_CLASSES, findClassSlug, DND5E_RACES, DND5E_BACKGROUNDS, findBackgroundSlug } from "./classes.js";
 import { api } from "../../services/api.js";
 
 function ComboField({ label, value, onChange, options }) {
   const [open, setOpen] = useState(false);
-  const filtered = value
+  const [search, setSearch] = useState("");
+  const filtered = search
     ? options.filter(
         (c) =>
-          c.label.toLowerCase().includes(value.toLowerCase()) ||
-          (c.slug || "").toLowerCase().includes(value.toLowerCase())
+          c.label.toLowerCase().includes(search.toLowerCase()) ||
+          (c.slug || "").toLowerCase().includes(search.toLowerCase())
       )
     : options;
+  function handleSelect(c) { onChange(c.label); setSearch(""); setOpen(false); }
+  function handleInput(e) { setSearch(e.target.value); onChange(e.target.value); setOpen(true); }
+  function handleFocus() { setSearch(""); setOpen(true); }
+  function handleBlur() { setTimeout(() => { setOpen(false); setSearch(""); }, 150); }
   return (
     <div className="relative">
       <Input
         label={label}
-        value={value}
-        onChange={(e) => { onChange(e.target.value); setOpen(true); }}
-        onBlur={() => setTimeout(() => setOpen(false), 150)}
-        onFocus={() => setOpen(true)}
+        value={open ? search : value}
+        onChange={handleInput}
+        onBlur={handleBlur}
+        onFocus={handleFocus}
       />
       {open && filtered.length > 0 && (
         <div className="absolute z-10 top-full left-0 right-0 bg-parchment-deep border border-parchment-edge rounded-sheet shadow-page max-h-48 overflow-y-auto">
           {filtered.map((c) => (
             <button
               key={c.slug || c.label}
-              onMouseDown={() => { onChange(c.label); setOpen(false); }}
+              onMouseDown={() => handleSelect(c)}
               className="w-full text-left px-3 py-1.5 text-sm font-serif text-ink hover:bg-parchment-edge/40 flex items-center justify-between gap-2"
             >
               <span>{c.label}</span>
@@ -52,7 +58,7 @@ function ComboClass({ value, onChange, classes }) {
   return <ComboField label="Classe" value={value} onChange={onChange} options={classes} />;
 }
 
-function SkillChoicePanel({ title, choose, options, appliedSkills, onApplySkill }) {
+function SkillChoicePanel({ title, choose, options, appliedSkills, onApplySkill, onRemoveSkill }) {
   const selected = options.filter((o) => appliedSkills?.[o.key]);
   const maxReached = selected.length >= choose;
   return (
@@ -66,16 +72,16 @@ function SkillChoicePanel({ title, choose, options, appliedSkills, onApplySkill 
       <div className="flex flex-wrap gap-1.5">
         {options.map((sk) => {
           const already = !!appliedSkills?.[sk.key];
-          const disabled = already || maxReached;
+          const disabled = !already && maxReached;
           return (
             <button
               key={sk.key}
-              onClick={() => !disabled && onApplySkill(sk.key)}
+              onClick={() => already ? onRemoveSkill?.(sk.key) : (!disabled && onApplySkill(sk.key))}
               disabled={disabled}
-              title={already ? "Já marcada" : maxReached ? "Limite atingido" : "Marcar perícia"}
+              title={already ? "Clique para remover" : maxReached ? "Limite atingido" : "Marcar perícia"}
               className={`flex items-center gap-1 text-xs font-serif px-2 py-0.5 rounded-sheet border transition ${
                 already
-                  ? "border-hp-healthy/40 text-hp-healthy cursor-default"
+                  ? "border-hp-healthy/40 text-hp-healthy hover:border-burgundy hover:text-burgundy"
                   : maxReached
                   ? "border-parchment-edge text-ink-faded cursor-not-allowed opacity-40"
                   : "border-parchment-edge text-ink hover:border-burgundy hover:text-burgundy"
@@ -171,7 +177,7 @@ export default function Dnd5eSheet({ data, onUpdate }) {
 
   function addMc() {
     const next = structuredClone(data);
-    next.multiclasses = [...(next.multiclasses || []), { class: "", subclass: "" }];
+    next.multiclasses = [...(next.multiclasses || []), { class: "", subclass: "", level: 1 }];
     onUpdate(next);
   }
 
@@ -247,15 +253,103 @@ export default function Dnd5eSheet({ data, onUpdate }) {
     onUpdate({ ...data, features: (data.features || []).filter((f) => f.id !== id) });
   }
 
-  const pb = data.proficiencyBonus || 2;
+  function addFeat(item) {
+    const entry = { id: crypto.randomUUID(), name: item.name, prerequisite: item.prerequisite || null, description: item.description || "" };
+    onUpdate({ ...data, feats: [...(data.feats || []), entry] });
+  }
 
-  const maxSpellLevel = Object.entries(data.spellSlots || {}).reduce(
-    (max, [lvl, slots]) => ((slots?.total || 0) > 0 ? Math.max(max, Number(lvl)) : max), 0
-  );
-  const spellSearchFn = classSlug
-    ? (q) => api.searchClassSpells(classSlug, q, maxSpellLevel || 9)
-    : dnd5eApi.searchSpells;
-  const spellBrowserTitle = classSlug ? `Magias de ${data.class} (D&D 5e)` : "Buscar Magia (D&D 5e)";
+  function removeFeat(id) {
+    onUpdate({ ...data, feats: (data.feats || []).filter((f) => f.id !== id) });
+  }
+
+  // Normalize source objects for backward-compat (old sheets only have race/background/subclass)
+  function normSources(src) {
+    return { race: [], subrace: [], background: [], class: [], subclass: [], feat: [], ...(src || {}) };
+  }
+  function profSources() { return normSources(data.proficiencySources); }
+  function langSources() { return normSources(data.languageSources); }
+
+  // Computed display strings from source arrays (union, deduped)
+  const allLanguagesDisplay = (() => {
+    const src = langSources();
+    const arr = joinSources(src);
+    if (arr.length > 0) return arr.join(", ");
+    // fallback: fichas antigas armazenam string diretamente
+    return data.languages || "";
+  })();
+
+  const allProficienciesDisplay = (() => {
+    const src = profSources();
+    const arr = joinSources(src).filter((v) => {
+      // skill keys look like "perception" — exclude them, those are in data.skills
+      const isSkillKey = /^[a-z][a-zA-Z]+$/.test(v) && v.length < 20;
+      return !isSkillKey;
+    });
+    if (arr.length > 0) return arr.join(", ");
+    return data.otherProficiencies || "";
+  })();
+
+  const totalLevel = calcTotalLevel(data);
+  const pb = calcProficiencyBonus(totalLevel);
+
+  // Build caster list: primary class + caster multiclasses
+  const allCasters = [
+    classSlug && isCaster(classSlug) ? classSlug : null,
+    ...(data.multiclasses || []).map((mc) => {
+      const slug = findClassSlug(mc.class);
+      return slug && isCaster(slug) ? slug : null;
+    }),
+  ].filter(Boolean);
+
+  const maxSpellLevel = (() => {
+    let max = classSlug ? getMaxSpellLevel(classSlug, data.level || 1) : 0;
+    for (const mc of data.multiclasses || []) {
+      const slug = findClassSlug(mc.class);
+      if (slug) max = Math.max(max, getMaxSpellLevel(slug, mc.level || 1));
+    }
+    return max || Object.entries(data.spellSlots || {}).reduce(
+      (m, [lvl, slots]) => ((slots?.total || 0) > 0 ? Math.max(m, Number(lvl)) : m), 0
+    );
+  })();
+
+  // School restriction for Eldritch Knight and Arcane Trickster subclasses
+  const SCHOOL_RESTRICTIONS = {
+    "eldritch-knight":   ["Abjuration", "Evocation"],
+    "arcane-trickster":  ["Enchantment", "Illusion"],
+  };
+  const restrictedSchools = (() => {
+    if (subclassSlug && SCHOOL_RESTRICTIONS[subclassSlug]) return SCHOOL_RESTRICTIONS[subclassSlug];
+    for (const mc of data.multiclasses || []) {
+      const mcSlug = findClassSlug(mc.class);
+      const mcSubList = mcSlug ? (mcSubclasses[mcSlug] || []) : [];
+      const mcSubSlug = mcSubList.find((s) => s.label.toLowerCase() === (mc.subclass || "").toLowerCase())?.slug;
+      if (mcSubSlug && SCHOOL_RESTRICTIONS[mcSubSlug]) return SCHOOL_RESTRICTIONS[mcSubSlug];
+    }
+    return null;
+  })();
+
+  const baseSpellSearchFn = allCasters.length > 1
+    ? (q, pg = 1) => api.searchMultiClassSpells(allCasters, q, maxSpellLevel || 1, pg)
+    : allCasters.length === 1
+    ? (q, pg = 1) => api.searchClassSpells(allCasters[0], q, maxSpellLevel || 1, pg)
+    : (q, pg = 1) => dnd5eApi.searchSpells(q, pg).then((r) => {
+        const results = r.results || r;
+        const filtered = maxSpellLevel > 0 ? results.filter((s) => (s.level ?? 0) <= maxSpellLevel) : results;
+        return { ...r, results: filtered };
+      });
+
+  const spellSearchFn = restrictedSchools
+    ? (q, pg) => baseSpellSearchFn(q, pg).then((r) => ({
+        ...r,
+        results: (r.results || []).filter((s) => !s.school || restrictedSchools.includes(s.school)),
+      }))
+    : baseSpellSearchFn;
+
+  const spellBrowserTitle = allCasters.length > 1
+    ? `Magias (${allCasters.map((s) => s[0].toUpperCase() + s.slice(1)).join(" + ")}) · D&D 5e`
+    : allCasters.length === 1
+    ? `Magias de ${data.class} (D&D 5e)`
+    : "Buscar Magia (D&D 5e)";
 
   return (
     <div className="max-w-4xl mx-auto px-3 py-4">
@@ -286,19 +380,43 @@ export default function Dnd5eSheet({ data, onUpdate }) {
           {(data.multiclasses || []).map((mc, i) => {
             const mcSlug = findClassSlug(mc.class);
             const mcSubList = mcSlug ? (mcSubclasses[mcSlug] || []) : [];
+            const mcSubclassSlug = mcSubList.find(
+              (s) => s.label.toLowerCase() === (mc.subclass || "").toLowerCase()
+            )?.slug;
             return (
-              <div key={i} className="sm:col-span-2 grid grid-cols-2 gap-2 items-end">
-                <ComboField label={`Multiclasse ${i + 1}`} value={mc.class || ""} onChange={(v) => setMc(i, "class", v)} options={DND5E_CLASSES} />
-                {mcSubList.length > 0
-                  ? <ComboField label="Subclasse" value={mc.subclass || ""} onChange={(v) => setMc(i, "subclass", v)} options={mcSubList} />
-                  : <Input label="Subclasse" value={mc.subclass || ""} onChange={(e) => setMc(i, "subclass", e.target.value)} />
-                }
-                <button
-                  onClick={() => removeMc(i)}
-                  className="col-span-2 flex justify-end text-ink-faded hover:text-burgundy transition"
-                >
-                  <Trash2 size={14} />
-                </button>
+              <div key={i} className="sm:col-span-2 space-y-2">
+                <div className="grid grid-cols-[1fr_1fr_4rem] gap-2 items-end">
+                  <ComboField label={`Multiclasse ${i + 1}`} value={mc.class || ""} onChange={(v) => setMc(i, "class", v)} options={DND5E_CLASSES} />
+                  {mcSubList.length > 0
+                    ? <ComboField label="Subclasse" value={mc.subclass || ""} onChange={(v) => setMc(i, "subclass", v)} options={mcSubList} />
+                    : <Input label="Subclasse" value={mc.subclass || ""} onChange={(e) => setMc(i, "subclass", e.target.value)} />
+                  }
+                  <Input label="Nível" type="number" min={1} max={20} value={mc.level || 1} onChange={(e) => setMc(i, "level", Number(e.target.value))} />
+                  <button
+                    onClick={() => removeMc(i)}
+                    className="col-span-3 flex justify-end text-ink-faded hover:text-burgundy transition"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+                {mcSlug && (
+                  <ClassSuggestions
+                    className={mc.class}
+                    level={mc.level || 1}
+                    fetchFn={(cls, lvl) => api.searchByClass("dnd5e", "classfeatures", mcSlug, lvl, 1, 100)}
+                    addedNames={(data.features || []).map((f) => f.name)}
+                    onAdd={addFeature}
+                  />
+                )}
+                {mcSubclassSlug && (
+                  <ClassSuggestions
+                    className={mc.subclass}
+                    level={mc.level || 1}
+                    fetchFn={(_, lvl) => api.searchByClass("dnd5e", "subclassfeatures", mcSubclassSlug, lvl, 1, 100)}
+                    addedNames={(data.features || []).map((f) => f.name)}
+                    onAdd={addFeature}
+                  />
+                )}
               </div>
             );
           })}
@@ -320,7 +438,7 @@ export default function Dnd5eSheet({ data, onUpdate }) {
               <ClassSuggestions
                 className={data.class}
                 level={data.level || 1}
-                fetchFn={(cls, lvl) => api.searchByClass("dnd5e", "classfeatures", findClassSlug(cls) || cls, lvl)}
+                fetchFn={(cls, lvl) => api.searchByClass("dnd5e", "classfeatures", findClassSlug(cls) || cls, lvl, 1, 100)}
                 addedNames={(data.features || []).map((f) => f.name)}
                 onAdd={addFeature}
               />
@@ -341,7 +459,19 @@ export default function Dnd5eSheet({ data, onUpdate }) {
                 choose={choice.choose}
                 options={choice.from}
                 appliedSkills={data.skills}
-                onApplySkill={(key) => { const n = structuredClone(data); n.skills[key] = true; onUpdate(n); }}
+                onApplySkill={(key) => {
+                  const n = structuredClone(data);
+                  n.skills[key] = true;
+                  if (!n.proficiencySources) n.proficiencySources = { race: [], background: [], subclass: [] };
+                  if (!n.proficiencySources.subclass.includes(key)) n.proficiencySources.subclass = [...n.proficiencySources.subclass, key];
+                  onUpdate(n);
+                }}
+                onRemoveSkill={(key) => {
+                  const n = structuredClone(data);
+                  n.skills[key] = false;
+                  if (n.proficiencySources) n.proficiencySources.subclass = n.proficiencySources.subclass.filter((k) => k !== key);
+                  onUpdate(n);
+                }}
               />
             </div>
           ))}
@@ -353,6 +483,7 @@ export default function Dnd5eSheet({ data, onUpdate }) {
                 options={classStatus.data.savingThrows.map((key) => ({ key, name: ABILITY_PT[key] }))}
                 appliedSkills={data.savingThrows}
                 onApplySkill={(key) => { const n = structuredClone(data); n.savingThrows[key] = true; onUpdate(n); }}
+                onRemoveSkill={(key) => { const n = structuredClone(data); n.savingThrows[key] = false; onUpdate(n); }}
               />
             </div>
           )}
@@ -363,7 +494,7 @@ export default function Dnd5eSheet({ data, onUpdate }) {
               <ClassSuggestions
                 className={data.subclass}
                 level={data.level || 1}
-                fetchFn={(_, lvl) => api.searchByClass("dnd5e", "subclassfeatures", subclassSlug, lvl)}
+                fetchFn={(_, lvl) => api.searchByClass("dnd5e", "subclassfeatures", subclassSlug, lvl, 1, 100)}
                 addedNames={(data.features || []).map((f) => f.name)}
                 onAdd={addFeature}
               />
@@ -386,9 +517,53 @@ export default function Dnd5eSheet({ data, onUpdate }) {
                 details={raceStatus.data}
                 type="race"
                 data={data}
-                onApplySkill={(key) => { const n = structuredClone(data); n.skills[key] = true; onUpdate(n); }}
-                onAppendLanguage={(lang) => { const n = structuredClone(data); n.languages = n.languages ? `${n.languages}, ${lang}` : lang; onUpdate(n); }}
-                onAppendProficiency={(prof) => { const n = structuredClone(data); n.otherProficiencies = n.otherProficiencies ? `${n.otherProficiencies}, ${prof}` : prof; onUpdate(n); }}
+                proficiencySources={profSources()}
+                languageSources={langSources()}
+                onApplySkill={(key) => {
+                  const n = structuredClone(data);
+                  n.skills[key] = true;
+                  const ps = normSources(n.proficiencySources);
+                  if (!ps.race.includes(key)) ps.race = [...ps.race, key];
+                  n.proficiencySources = ps;
+                  onUpdate(n);
+                }}
+                onRemoveSkill={(key) => {
+                  const n = structuredClone(data);
+                  const ps = normSources(n.proficiencySources);
+                  ps.race = ps.race.filter((k) => k !== key);
+                  n.proficiencySources = ps;
+                  const inOther = Object.entries(ps).some(([src, arr]) => src !== "race" && arr.includes(key));
+                  if (!inOther) n.skills[key] = false;
+                  onUpdate(n);
+                }}
+                onAppendLanguage={(lang) => {
+                  const n = structuredClone(data);
+                  const ls = normSources(n.languageSources);
+                  if (!ls.race.includes(lang)) ls.race = [...ls.race, lang];
+                  n.languageSources = ls;
+                  onUpdate(n);
+                }}
+                onRemoveLanguage={(lang) => {
+                  const n = structuredClone(data);
+                  const ls = normSources(n.languageSources);
+                  ls.race = ls.race.filter((l) => l !== lang);
+                  n.languageSources = ls;
+                  onUpdate(n);
+                }}
+                onAppendProficiency={(prof) => {
+                  const n = structuredClone(data);
+                  const ps = normSources(n.proficiencySources);
+                  if (!ps.race.includes(prof)) ps.race = [...ps.race, prof];
+                  n.proficiencySources = ps;
+                  onUpdate(n);
+                }}
+                onRemoveProficiency={(prof) => {
+                  const n = structuredClone(data);
+                  const ps = normSources(n.proficiencySources);
+                  ps.race = ps.race.filter((p) => p !== prof);
+                  n.proficiencySources = ps;
+                  onUpdate(n);
+                }}
                 onAddTrait={(name) => addFeature({ name, source: raceStatus.data?.name || "" })}
                 onApplyAbilityBonus={(key, bonus, sourceIndex) => {
                   const n = structuredClone(data);
@@ -414,9 +589,53 @@ export default function Dnd5eSheet({ data, onUpdate }) {
                 details={bgStatus.data}
                 type="background"
                 data={data}
-                onApplySkill={(key) => { const n = structuredClone(data); n.skills[key] = true; onUpdate(n); }}
-                onAppendLanguage={(lang) => { const n = structuredClone(data); n.languages = n.languages ? `${n.languages}, ${lang}` : lang; onUpdate(n); }}
-                onAppendProficiency={(prof) => { const n = structuredClone(data); n.otherProficiencies = n.otherProficiencies ? `${n.otherProficiencies}, ${prof}` : prof; onUpdate(n); }}
+                proficiencySources={profSources()}
+                languageSources={langSources()}
+                onApplySkill={(key) => {
+                  const n = structuredClone(data);
+                  n.skills[key] = true;
+                  const ps = normSources(n.proficiencySources);
+                  if (!ps.background.includes(key)) ps.background = [...ps.background, key];
+                  n.proficiencySources = ps;
+                  onUpdate(n);
+                }}
+                onRemoveSkill={(key) => {
+                  const n = structuredClone(data);
+                  const ps = normSources(n.proficiencySources);
+                  ps.background = ps.background.filter((k) => k !== key);
+                  n.proficiencySources = ps;
+                  const inOther = Object.entries(ps).some(([src, arr]) => src !== "background" && arr.includes(key));
+                  if (!inOther) n.skills[key] = false;
+                  onUpdate(n);
+                }}
+                onAppendLanguage={(lang) => {
+                  const n = structuredClone(data);
+                  const ls = normSources(n.languageSources);
+                  if (!ls.background.includes(lang)) ls.background = [...ls.background, lang];
+                  n.languageSources = ls;
+                  onUpdate(n);
+                }}
+                onRemoveLanguage={(lang) => {
+                  const n = structuredClone(data);
+                  const ls = normSources(n.languageSources);
+                  ls.background = ls.background.filter((l) => l !== lang);
+                  n.languageSources = ls;
+                  onUpdate(n);
+                }}
+                onAppendProficiency={(prof) => {
+                  const n = structuredClone(data);
+                  const ps = normSources(n.proficiencySources);
+                  if (!ps.background.includes(prof)) ps.background = [...ps.background, prof];
+                  n.proficiencySources = ps;
+                  onUpdate(n);
+                }}
+                onRemoveProficiency={(prof) => {
+                  const n = structuredClone(data);
+                  const ps = normSources(n.proficiencySources);
+                  ps.background = ps.background.filter((p) => p !== prof);
+                  n.proficiencySources = ps;
+                  onUpdate(n);
+                }}
                 onAddTrait={(name) => addFeature({ name, source: bgStatus.data?.name || "" })}
                 onApplyAbilityBonus={(key, bonus, sourceIndex) => {
                   const n = structuredClone(data);
@@ -438,17 +657,15 @@ export default function Dnd5eSheet({ data, onUpdate }) {
             </label>
           </div>
           <div className="sm:col-span-2">
-            <Input label="Proficiências e idiomas" value={data.languages || ""} onChange={(e) => set("languages", e.target.value)} />
+            <label className="flex flex-col gap-1">
+              <span className="font-display text-[10px] uppercase tracking-widest text-ink-muted">Idiomas</span>
+              <p className="text-sm font-serif text-ink min-h-[1.5rem]">{allLanguagesDisplay || <span className="text-ink-faded italic">Nenhum</span>}</p>
+            </label>
           </div>
           <div className="sm:col-span-2">
             <label className="flex flex-col gap-1">
               <span className="font-display text-[10px] uppercase tracking-widest text-ink-muted">Outras proficiências</span>
-              <textarea
-                value={data.otherProficiencies || ""}
-                onChange={(e) => set("otherProficiencies", e.target.value)}
-                rows={3}
-                className="bg-transparent border border-parchment-edge rounded-sheet px-2 py-1.5 text-sm text-ink placeholder:text-ink-faded focus:border-burgundy focus:outline-none resize-none w-full"
-              />
+              <p className="text-sm font-serif text-ink min-h-[1.5rem]">{allProficienciesDisplay || <span className="text-ink-faded italic">Nenhuma</span>}</p>
             </label>
           </div>
         </div>
@@ -533,7 +750,6 @@ export default function Dnd5eSheet({ data, onUpdate }) {
               { label: "CA", key: "ac", type: "number" },
               { label: "Iniciativa", key: "initiative", type: "number" },
               { label: "Velocidade", key: "speed", type: "number" },
-              { label: "Bônus de Proficiência", key: "proficiencyBonus", type: "number" },
             ].map(({ label, key, type }) => (
               <label key={key} className="flex flex-col items-center gap-1 bg-parchment-deep border border-parchment-edge rounded-sheet p-3">
                 <span className="font-display text-[9px] uppercase tracking-widest text-ink-muted">{label}</span>
@@ -545,6 +761,11 @@ export default function Dnd5eSheet({ data, onUpdate }) {
                 />
               </label>
             ))}
+            <div className="flex flex-col items-center gap-1 bg-parchment-deep border border-gold/30 rounded-sheet p-3">
+              <span className="font-display text-[9px] uppercase tracking-widest text-ink-muted">Bônus de Proficiência</span>
+              <span className="text-xl font-display text-gold tabular-nums">+{pb}</span>
+              <span className="text-[8px] font-display uppercase tracking-widest text-ink-faded">Nível {totalLevel}</span>
+            </div>
           </div>
 
           <Card>
@@ -659,6 +880,8 @@ export default function Dnd5eSheet({ data, onUpdate }) {
           </div>
 
           {[["Truques", "cantrips"], ...Array.from({ length: 9 }, (_, i) => [`Nível ${i + 1}`, String(i + 1)])].map(([label, key]) => {
+            const spellLevel = key === "cantrips" ? 0 : Number(key);
+            if (spellLevel > 0 && maxSpellLevel > 0 && spellLevel > maxSpellLevel) return null;
             const spells = data.spells?.[key] || [];
             const slot = data.spellSlots?.[key];
             return (
@@ -765,7 +988,7 @@ export default function Dnd5eSheet({ data, onUpdate }) {
           <ClassSuggestions
             className={findClassSlug(data.class) ? data.class : null}
             level={data.level || 1}
-            fetchFn={(cls, lvl) => api.searchByClass("dnd5e", "classfeatures", findClassSlug(cls) || cls, lvl)}
+            fetchFn={(cls, lvl) => api.searchByClass("dnd5e", "classfeatures", findClassSlug(cls) || cls, lvl, 1, 100)}
             addedNames={(data.features || []).map((f) => f.name)}
             onAdd={addFeature}
           />
@@ -773,11 +996,38 @@ export default function Dnd5eSheet({ data, onUpdate }) {
             <ClassSuggestions
               className={data.subclass}
               level={data.level || 1}
-              fetchFn={(_, lvl) => api.searchByClass("dnd5e", "subclassfeatures", subclassSlug, lvl)}
+              fetchFn={(_, lvl) => api.searchByClass("dnd5e", "subclassfeatures", subclassSlug, lvl, 1, 100)}
               addedNames={(data.features || []).map((f) => f.name)}
               onAdd={addFeature}
             />
           )}
+          {(data.multiclasses || []).map((mc, i) => {
+            const mcSlug = findClassSlug(mc.class);
+            if (!mcSlug) return null;
+            const mcSubclassSlug = mcSubclasses[mcSlug]?.find(
+              (s) => s.label.toLowerCase() === (mc.subclass || "").toLowerCase()
+            )?.slug;
+            return (
+              <div key={i} className="space-y-2">
+                <ClassSuggestions
+                  className={mc.class}
+                  level={data.level || 1}
+                  fetchFn={(cls, lvl) => api.searchByClass("dnd5e", "classfeatures", mcSlug, lvl, 1, 100)}
+                  addedNames={(data.features || []).map((f) => f.name)}
+                  onAdd={addFeature}
+                />
+                {mcSubclassSlug && (
+                  <ClassSuggestions
+                    className={mc.subclass}
+                    level={data.level || 1}
+                    fetchFn={(_, lvl) => api.searchByClass("dnd5e", "subclassfeatures", mcSubclassSlug, lvl, 1, 100)}
+                    addedNames={(data.features || []).map((f) => f.name)}
+                    onAdd={addFeature}
+                  />
+                )}
+              </div>
+            );
+          })}
           <div className="flex justify-end">
             <Button size="sm" variant="ghost" icon={<Plus size={14} />} onClick={() => setBrowser("features")}>Buscar Habilidade</Button>
           </div>
@@ -820,6 +1070,37 @@ export default function Dnd5eSheet({ data, onUpdate }) {
           ))}
 
           <Button size="sm" variant="ghost" icon={<Plus size={14} />} onClick={() => addFeature({ name: "Novo Traço" })}>Adicionar manual</Button>
+
+          {/* Feats */}
+          <div className="border-t border-parchment-edge pt-3 space-y-2">
+            <div className="flex items-center justify-between">
+              <p className="font-display text-xs uppercase tracking-widest text-ink-muted">Talentos (Feats)</p>
+              <Button size="sm" variant="ghost" icon={<Plus size={14} />} onClick={() => setBrowser("feats")}>Buscar Talento</Button>
+            </div>
+            {(data.feats || []).length === 0 && (
+              <p className="text-ink-muted font-serif italic text-sm py-2 text-center">Nenhum talento. Clique em "Buscar Talento".</p>
+            )}
+            {(data.feats || []).map((feat) => (
+              <Card key={feat.id}>
+                <Card.Body>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1">
+                      <p className="font-display text-sm text-ink">{feat.name}</p>
+                      {feat.prerequisite && (
+                        <p className="text-[10px] text-ink-muted font-display uppercase tracking-widest mt-0.5">Pré-requisito: {feat.prerequisite}</p>
+                      )}
+                    </div>
+                    <button onClick={() => removeFeat(feat.id)} className="text-ink-faded hover:text-burgundy transition shrink-0">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                  {feat.description && (
+                    <p className="mt-1.5 text-sm text-ink font-serif leading-relaxed">{feat.description}</p>
+                  )}
+                </Card.Body>
+              </Card>
+            ))}
+          </div>
         </div>
       )}
 
@@ -891,13 +1172,25 @@ export default function Dnd5eSheet({ data, onUpdate }) {
         open={browser === "features"}
         onClose={() => setBrowser(null)}
         title="Buscar Habilidade (D&D 5e)"
-        searchFn={dnd5eApi.searchFeats}
+        searchFn={dnd5eApi.searchClassFeatures}
         renderResult={(r) => (
           <p className="text-xs text-ink-muted font-serif">
             {r.class}{r.level ? ` · Nível ${r.level}` : ""}
           </p>
         )}
         onAdd={addFeature}
+      />
+      <BrowserPanel
+        open={browser === "feats"}
+        onClose={() => setBrowser(null)}
+        title="Buscar Talento (D&D 5e)"
+        searchFn={dnd5eApi.searchFeats}
+        renderResult={(r) => (
+          <p className="text-xs text-ink-muted font-serif">
+            {r.prerequisite ? `Pré-req: ${r.prerequisite}` : "Sem pré-requisito"}
+          </p>
+        )}
+        onAdd={addFeat}
       />
     </div>
   );

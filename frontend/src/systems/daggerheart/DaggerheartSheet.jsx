@@ -8,7 +8,7 @@ import BrowserPanel from "../../components/browsers/BrowserPanel.jsx";
 import ClassSuggestions from "../../components/ClassSuggestions.jsx";
 import { daggerheartApi } from "./api.js";
 import { DH_TRAITS, DH_DOMAINS } from "./schema.js";
-import { DH_CLASSES, findClassSlug, DH_ANCESTRIES, DH_COMMUNITIES } from "./classes.js";
+import { DH_CLASSES, findClassSlug, DH_ANCESTRIES, DH_COMMUNITIES, DH_SUBCLASSES } from "./classes.js";
 import { api } from "../../services/api.js";
 
 function ComboField({ label, value, onChange, options }) {
@@ -177,8 +177,14 @@ export default function DaggerheartSheet({ data, onUpdate }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input label="Nome" value={data.name || ""} onChange={(e) => set("name", e.target.value)} />
             <Input label="Pronomes" value={data.pronouns || ""} onChange={(e) => set("pronouns", e.target.value)} />
-            <ComboClass classes={DH_CLASSES} value={data.class || ""} onChange={(v) => set("class", v)} />
-            <Input label="Subclasse" value={data.subclass || ""} onChange={(e) => set("subclass", e.target.value)} />
+            <ComboClass classes={DH_CLASSES} value={data.class || ""} onChange={(v) => { const n = structuredClone(data); n.class = v; n.subclass = ""; onUpdate(n); }} />
+            {(() => {
+              const classSlug = findClassSlug(data.class);
+              const subOpts = classSlug ? (DH_SUBCLASSES[classSlug] || []) : [];
+              return subOpts.length > 0
+                ? <ComboField label="Subclasse" value={data.subclass || ""} onChange={(v) => set("subclass", v)} options={subOpts} />
+                : <Input label="Subclasse" value={data.subclass || ""} onChange={(e) => set("subclass", e.target.value)} />;
+            })()}
             <ComboField label="Ancestralidade Primária" value={ancestry.primary} onChange={(v) => setAncestry("primary", v)} options={DH_ANCESTRIES} />
             <ComboField label="Ancestralidade Secundária" value={ancestry.secondary} onChange={(v) => setAncestry("secondary", v)} options={DH_ANCESTRIES} />
             <ComboField label="Comunidade" value={data.community || ""} onChange={(v) => set("community", v)} options={DH_COMMUNITIES} />

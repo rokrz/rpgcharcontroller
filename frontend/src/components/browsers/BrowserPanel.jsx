@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { X, Search, Plus, BookOpen } from "lucide-react";
+import { X, Search, Plus, BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
 import Button from "../ui/Button.jsx";
 import { useRulesWindow } from "../../context/RulesWindowContext.jsx";
 
@@ -8,6 +8,8 @@ export default function BrowserPanel({ open, onClose, title, searchFn, renderRes
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const debounceRef = useRef(null);
   const { openWindow } = useRulesWindow();
 
@@ -18,21 +20,28 @@ export default function BrowserPanel({ open, onClose, title, searchFn, renderRes
       setLoading(true);
       setError(null);
       try {
-        const data = await searchFn(query);
+        const data = await searchFn(query, page);
         setResults(data.results || data || []);
+        setTotalPages(data.totalPages || 1);
       } catch (e) {
         setError("Erro ao buscar. Verifique a conexão.");
         setResults([]);
+        setTotalPages(1);
       } finally {
         setLoading(false);
       }
     }, 350);
     return () => clearTimeout(debounceRef.current);
-  }, [query, open, searchFn]);
+  }, [query, page, open, searchFn]);
 
   useEffect(() => {
-    if (!open) { setQuery(""); setResults([]); }
+    if (!open) { setQuery(""); setResults([]); setPage(1); setTotalPages(1); }
   }, [open]);
+
+  function handleQueryChange(e) {
+    setPage(1);
+    setQuery(e.target.value);
+  }
 
   function handleView(item) {
     const label = renderResult ? renderResult(item)?.label : item.name;
@@ -61,7 +70,7 @@ export default function BrowserPanel({ open, onClose, title, searchFn, renderRes
               type="text"
               placeholder="Buscar..."
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={handleQueryChange}
               className="w-full pl-7 pr-3 py-1.5 text-sm bg-parchment border border-parchment-edge rounded-sheet text-ink placeholder:text-ink-faded focus:border-burgundy focus:outline-none"
             />
           </div>
@@ -106,6 +115,27 @@ export default function BrowserPanel({ open, onClose, title, searchFn, renderRes
               </div>
             </div>
           ))}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between px-3 py-2 border-t border-parchment-edge mt-1">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page <= 1}
+                className="flex items-center gap-1 text-xs font-display text-ink-muted hover:text-ink disabled:opacity-30 transition"
+              >
+                <ChevronLeft size={14} /> Anterior
+              </button>
+              <span className="text-[10px] font-display text-ink-muted tabular-nums">
+                {page} / {totalPages}
+              </span>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page >= totalPages}
+                className="flex items-center gap-1 text-xs font-display text-ink-muted hover:text-ink disabled:opacity-30 transition"
+              >
+                Próxima <ChevronRight size={14} />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

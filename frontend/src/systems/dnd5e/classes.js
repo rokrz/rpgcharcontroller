@@ -6,8 +6,9 @@ export const DND5E_RACES = [
   { label: "Meio-Elfo",  slug: "half-elf" },
   { label: "Meio-Orc",   slug: "half-orc" },
   { label: "Halfling",   slug: "halfling" },
-  { label: "Humano",     slug: "human" },
-  { label: "Tiefling",   slug: "tiefling" },
+  { label: "Humano",          slug: "human" },
+  { label: "Humano Variante", slug: "human-variant" },
+  { label: "Tiefling",        slug: "tiefling" },
 ];
 
 export function findRaceSlug(input) {
