@@ -370,11 +370,14 @@ export default function Dnd5eSheet({ data, onUpdate }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input label="Nome" value={data.name || ""} onChange={(e) => set("name", e.target.value)} />
           <Input label="Jogador" value={data.playerName || ""} onChange={(e) => set("playerName", e.target.value)} />
-          <ComboClass classes={DND5E_CLASSES} value={data.class || ""} onChange={(v) => set("class", v)} />
-          {subclasses.length > 0
-            ? <ComboField label="Subclasse" value={data.subclass || ""} onChange={(v) => set("subclass", v)} options={subclasses} />
-            : <Input label="Subclasse" value={data.subclass || ""} onChange={(e) => set("subclass", e.target.value)} />
-          }
+          <div className="sm:col-span-2 grid grid-cols-[1fr_1fr_4rem] gap-2 items-end">
+            <ComboClass classes={DND5E_CLASSES} value={data.class || ""} onChange={(v) => set("class", v)} />
+            {subclasses.length > 0
+              ? <ComboField label="Subclasse" value={data.subclass || ""} onChange={(v) => set("subclass", v)} options={subclasses} />
+              : <Input label="Subclasse" value={data.subclass || ""} onChange={(e) => set("subclass", e.target.value)} />
+            }
+            <Input label="Nível" type="number" min={1} max={20} value={data.level || 1} onChange={(e) => set("level", Number(e.target.value))} />
+          </div>
 
           {/* Multiclasses */}
           {(data.multiclasses || []).map((mc, i) => {
@@ -501,7 +504,10 @@ export default function Dnd5eSheet({ data, onUpdate }) {
             </div>
           )}
 
-          <Input label="Nível" type="number" value={data.level || 1} onChange={(e) => set("level", Number(e.target.value))} />
+          <div className="flex flex-col gap-0.5 bg-parchment-deep border border-parchment-edge rounded-sheet px-3 py-2">
+            <span className="font-display text-[9px] uppercase tracking-widest text-ink-muted">Nível Total</span>
+            <span className="text-xl font-display tabular-nums text-ink">{totalLevel}</span>
+          </div>
           <Input label="XP" type="number" value={data.xp || 0} onChange={(e) => set("xp", Number(e.target.value))} />
           <ComboField label="Raça / Espécie" value={data.race || ""} onChange={(v) => set("race", v)} options={races} />
           <ComboField label="Antecedente" value={data.background || ""} onChange={(v) => set("background", v)} options={DND5E_BACKGROUNDS} />
